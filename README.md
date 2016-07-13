@@ -25,7 +25,7 @@ $fs = new FamilySearch([
 ]);
 
 // OAuth step 1: Redirect
-header("Location: " . $fs->oauthRedirect());
+$fs->oauthRedirect();
 
 // OAuth step 2: Exchange the code for an access token.
 //
