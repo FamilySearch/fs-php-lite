@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 include '../src/FamilySearch.php';
 
 $fs = new FamilySearch([

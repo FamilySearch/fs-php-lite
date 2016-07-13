@@ -80,6 +80,12 @@ class FamilySearch
             $this->sessionVariable = $options['sessionVariable'];
         }
         
+        // Load the access token from the session first so that it can be
+        // overwritten by the accessToken option
+        if ($this->sessions && isset($_SESSION[$this->sessionVariable])) {
+            $this->accessToken = $_SESSION[$this->sessionVariable];
+        }
+        
         if (isset($options['accessToken'])) {
             $this->accessToken = $options['accessToken'];
         }
@@ -123,25 +129,48 @@ class FamilySearch
         
         if ($response->statusCode === 200) {
             $this->accessToken = $response->data->access_token;
+            if ($this->sessions) {
+                $_SESSION[$this->sessionVariable] = $this->accessToken;
+            }
             return $this->accessToken;
         }
     }
     
     /**
-     * Get the ident host name for OAuth
+     * Get the access token, if it exists.
      * 
-     * @return string
+     * @return string access token
      */
-    private function identHost()
+    public function getAccessToken()
     {
-        switch ($this->environment) {
-            case 'production':
-                return 'https://ident.familysearch.org';
-            case 'beta':
-                return 'https://identbeta.familysearch.org';
-            default:
-                return 'https://identint.familysearch.org';
+        return $this->accessToken;
+    }
+    
+    /**
+     * Check whether the client has an active session. This first checks for the
+     * existence of an access token. If one is found then it sends a request to
+     * the server to validate the access token.
+     * 
+     * @return boolean Whether an active session exists
+     */
+    public function isAuthenticated()
+    {
+        if (!$this->getAccessToken()) {
+            return false;
         }
+        $response = $this->get('/platform/collection');
+        return $response->statusCode === 200;
+    }
+    /**
+     * Execute an HTTP GET
+     * 
+     * @param string $url URL
+     * @param array $queryParams Query parameters
+     * @param array $headers HTTP Request headers
+     */
+    public function get($url, $queryParams = array(), $headers = array())
+    {
+        return $this->request('GET', $url, $queryParams, $headers);
     }
     
     /**
@@ -182,7 +211,16 @@ class FamilySearch
         curl_setopt($request, CURLOPT_URL, $url);
         
         // Set the HTTP headers
-        $this->setRequestHeaders($request, is_array($headers) ? $headers : []);
+        if (!is_array($headers)) {
+            $headers = [];
+        }
+        if (!isset($headers['Authorization']) && $this->getAccessToken()) {
+            $headers['Authorization'] = 'Bearer ' . $this->getAccessToken();
+        }
+        if (!isset($headers['Content-Type'])) {
+            // $headers['Content-Type'] = 'application/x-fs-v1+json';
+        }
+        $this->setRequestHeaders($request, $headers);
         
         // Set the body
         if (is_array($body)) {
@@ -268,8 +306,7 @@ class FamilySearch
     /**
      * Build the URL for an HTTP request.
      * Process and attach query parameters.
-     * 
-     * TODO: Autofill the domain if it isn't set.
+     * Autofill the domain if it isn't set.
      * 
      * @param string $url URL
      * @param array $queryParams Query parameters
@@ -278,6 +315,10 @@ class FamilySearch
     private function buildRequestUrl($url, $queryParams)
     {
         $urlParts = parse_url($url);
+        
+        if (!isset($urlParts['host']) || !isset($urlParts['scheme'])) {
+            $url = $this->platformHost() . $url;
+        }
         
         if (count($queryParams) > 0) {
             
@@ -293,11 +334,9 @@ class FamilySearch
             else {
                 $url .= '?' . $queryString;
             }
-            
         }
         
         return $url;
-        
     }
     
     /**
@@ -314,6 +353,40 @@ class FamilySearch
         }
         curl_setopt($resource, CURLOPT_HEADER, true);
         curl_setopt($resource, CURLOPT_HTTPHEADER, $headersList);
+    }
+    
+    /**
+     * Get the ident host name for OAuth
+     * 
+     * @return string
+     */
+    private function identHost()
+    {
+        switch ($this->environment) {
+            case 'production':
+                return 'https://ident.familysearch.org';
+            case 'beta':
+                return 'https://identbeta.familysearch.org';
+            default:
+                return 'https://identint.familysearch.org';
+        }
+    }
+    
+    /**
+     * Get the host name for the platform API
+     * 
+     * @return string
+     */
+    private function platformHost()
+    {
+        switch ($this->environment) {
+            case 'production':
+                return 'https://familysearch.org';
+            case 'beta':
+                return 'https://beta.familysearch.org';
+            default:
+                return 'https://sandbox.familysearch.org';
+        }
     }
     
 }

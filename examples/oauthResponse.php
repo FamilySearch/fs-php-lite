@@ -2,5 +2,5 @@
 
 include '_client.php';
 
-echo '<pre>', print_r($fs->oauthResponse(), true), '</pre>';
+echo $fs->oauthResponse();
 echo '<pre>', print_r($fs->_lastResponse, true), '</pre>';
