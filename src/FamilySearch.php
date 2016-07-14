@@ -210,7 +210,7 @@ class FamilySearch
         $url = $this->buildRequestUrl($url, $queryParams);
         curl_setopt($request, CURLOPT_URL, $url);
         
-        // Set the HTTP headers
+        // Default HTTP headers
         if (!is_array($headers)) {
             $headers = [];
         }
@@ -220,23 +220,43 @@ class FamilySearch
         if (!isset($headers['Accept']) && strpos($url, '/platform/') !== false) {
             $headers['Accept'] = 'application/x-fs-v1+json';
         }
-        $this->setRequestHeaders($request, $headers);
         
         // Set the body
-        if (is_array($body)) {
+        if (is_array($body) && strpos($url, '/platform/') !== false) {
+           $headers['Content-Type'] = 'application/x-fs-v1+json';
+           $body = json_encode($body);
+        } else {
+           // This is currently only used for OAuth
            $body = http_build_query($body, '', '&');
         }
         if ($body) {
             curl_setopt($request, CURLOPT_POSTFIELDS, $body);
         }
         
+        // Process the HTTP headers.
+        // We set the headers after the body so that we can overwride the default
+        // Content-Type of application/x-www-form-urlencoded setting the POST
+        // body as a string
+        $headersList = [];
+        foreach ($headers as $key => $value) {
+            $headersList[] = $key.': '.$value;
+        }
+        curl_setopt($request, CURLOPT_HTTPHEADER, $headersList); 
+        
+        // Other curl options
+        curl_setopt($request, CURLOPT_HEADER, true);
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($request, CURLOPT_FOLLOWLOCATION, false);
+        
+        // Finally execute the curl request
         $curlResponse = curl_exec($request);
         
         // Process the curl response into a PHP response object
         if ($curlResponse) {
             $response = new stdClass;
+            $response->curl = $request;
+            $response->requestHeaders = $headers;
+            $response->requestBody = $body;
             $response->headers = array();
             $response->finalUrl = curl_getinfo($request, CURLINFO_EFFECTIVE_URL);
             
@@ -246,20 +266,20 @@ class FamilySearch
             // Extract headers from response
             preg_match_all($pattern, $curlResponse, $matches);
             $headers_string = array_pop($matches[0]);
-            $headers = explode("\r\n", str_replace("\r\n\r\n", '', $headers_string));
+            $responseHeaders = explode("\r\n", str_replace("\r\n\r\n", '', $headers_string));
             
             // Remove headers from the response body
             $response->body = str_replace($headers_string, '', $curlResponse);
             
             // Extract the version and status from the first header
-            $version_and_status = array_shift($headers);
+            $version_and_status = array_shift($responseHeaders);
             preg_match('#HTTP/(\d\.\d)\s(\d\d\d)\s(.*)#', $version_and_status, $matches);
             $response->statusCode = intval($matches[2]);
             $response->statusText = $matches[3];
             $response->status = $matches[2].' '.$matches[3];
             
             // Convert headers into an associative array
-            foreach ($headers as $header) {
+            foreach ($responseHeaders as $header) {
                 preg_match('#(.*?)\:\s(.*)#', $header, $matches);
                 $response->headers[$matches[1]] = $matches[2];
             }
@@ -268,10 +288,12 @@ class FamilySearch
             // appends all response headers into the final response which makes
             // parsing practically impossible. So we just recursively follow
             // redirects ourself.
-            if ($response->statusCode >= 300 || $response->statusCode < 400 && $response->headers['Location']) {
+            if ($response->statusCode >= 300 && $response->statusCode < 400 && $response->headers['Location']) {
+                
+                error_log("Redirecting $response->statusCode to $response->headers[Location]");
                 
                 // We don't include the body param because POSTs should never redirect
-                return $this->request($method, $response->headers['Location'], $queryParams, $headers);
+                return $this->request($method, $response->headers['Location'], $queryParams, $responseHeaders);
             }
             
             // Process JSON, if possible
@@ -346,22 +368,6 @@ class FamilySearch
         }
         
         return $url;
-    }
-    
-    /**
-     * Set the HTTP headers for a curl resource
-     * 
-     * @param resource $resource cURL resource
-     * @param array $headers HTTP Headers
-     */
-    private function setRequestHeaders($resource, $headers)
-    {
-        $headersList = [];
-        foreach ($headers as $key => $value) {
-            $headersList[] = $key.': '.$value;
-        }
-        curl_setopt($resource, CURLOPT_HEADER, true);
-        curl_setopt($resource, CURLOPT_HTTPHEADER, $headersList);
     }
     
     /**
