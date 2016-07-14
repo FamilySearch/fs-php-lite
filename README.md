@@ -35,18 +35,16 @@ $fs->oauthRedirect();
 $fs->oauthResponse();
 
 // Get the current user
-//
-// What format should the URLs be specified? Ideally developers could just copy
-// and paste URLs from the docs. They're in the format /platform/users/current.
-// Removing the repetive portion leaves us with `users/current` but that looks
-// odd. Perhaps we can allow all formats. We can check for the `/platform/`
-// prefix and add it when it's missing.
-//
-// We have to return a response object. We can't just return the response body.
-// A developer needs to know when a 404 or 410 was returned.
-$response = $fs->get('/users/current');
+$response = $fs->get('/platform/users/current');
 
-$response->statusCode();
+// Response objects have the following properties:
+$response->statusCode;
+$response->statusText;
+$response->headers;
+$response->finalUrl;
+$response->body;
 
-$response->body();
+// If the response included a JSON in the body then it will be parsed into an
+// associated array and be available via the `data` property.
+$response->data; 
 ```
