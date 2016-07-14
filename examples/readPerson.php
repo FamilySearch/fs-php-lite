@@ -10,11 +10,11 @@ if ($_GET['pid']) {
 
 // Show a form if a person id hasn't been provided
 else {
-?>
-<form>
-  <label>Person ID:</label>
-  <input type="text" name="pid" placeholder="KWMX-PR9" />
-  <button>Submit</button>
-</form>
-<?php
+  ?>
+    <form>
+      <label>Person ID:</label>
+      <input type="text" name="pid" placeholder="KWMX-PR9" />
+      <button>Submit</button>
+    </form>
+  <?php
 }
