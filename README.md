@@ -44,7 +44,7 @@ $response->headers;
 $response->finalUrl;
 $response->body;
 
-// If the response included a JSON in the body then it will be parsed into an
-// associated array and be available via the `data` property.
+// If the response included JSON in the body then it will be parsed into an
+// associative array and be available via the `data` property.
 $response->data; 
 ```
