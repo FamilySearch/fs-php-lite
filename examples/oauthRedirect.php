@@ -1,5 +1,5 @@
 <?php
 
-include '_client.php';
+include_once '_includes.php';
 
 $fs->oauthRedirect();

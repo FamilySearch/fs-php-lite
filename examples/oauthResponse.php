@@ -1,6 +1,5 @@
 <?php
 
-include '_client.php';
+include_once '_includes.php';
 
-echo $fs->oauthResponse();
-echo '<pre>', print_r($fs->_lastResponse, true), '</pre>';
+echo 'Access token: ' . $fs->oauthResponse();

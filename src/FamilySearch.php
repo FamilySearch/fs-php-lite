@@ -128,7 +128,7 @@ class FamilySearch
         ]);
         
         if ($response->statusCode === 200) {
-            $this->accessToken = $response->data->access_token;
+            $this->accessToken = $response->data['access_token'];
             if ($this->sessions) {
                 $_SESSION[$this->sessionVariable] = $this->accessToken;
             }
@@ -217,8 +217,8 @@ class FamilySearch
         if (!isset($headers['Authorization']) && $this->getAccessToken()) {
             $headers['Authorization'] = 'Bearer ' . $this->getAccessToken();
         }
-        if (!isset($headers['Content-Type'])) {
-            // $headers['Content-Type'] = 'application/x-fs-v1+json';
+        if (!isset($headers['Accept']) && strpos($url, '/platform/') !== false) {
+            $headers['Accept'] = 'application/x-fs-v1+json';
         }
         $this->setRequestHeaders($request, $headers);
         
@@ -231,14 +231,13 @@ class FamilySearch
         }
         
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($request, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($request, CURLOPT_FOLLOWLOCATION, false);
         $curlResponse = curl_exec($request);
         
         // Process the curl response into a PHP response object
         if ($curlResponse) {
             $response = new stdClass;
             $response->headers = array();
-            $response->requestUrl = $url;
             $response->finalUrl = curl_getinfo($request, CURLINFO_EFFECTIVE_URL);
             
             // Headers regex
@@ -265,10 +264,20 @@ class FamilySearch
                 $response->headers[$matches[1]] = $matches[2];
             }
             
+            // Follow redirects. We don't use the curl opt to do this because it
+            // appends all response headers into the final response which makes
+            // parsing practically impossible. So we just recursively follow
+            // redirects ourself.
+            if ($response->statusCode >= 300 || $response->statusCode < 400 && $response->headers['Location']) {
+                
+                // We don't include the body param because POSTs should never redirect
+                return $this->request($method, $response->headers['Location'], $queryParams, $headers);
+            }
+            
             // Process JSON, if possible
             if( isset($response->headers['Content-Type']) && strpos($response->headers['Content-Type'], 'json') !== false) {
                 try {
-                    $response->data = json_decode($response->body);
+                    $response->data = json_decode($response->body, true);
                 } catch (Exception $e) { }
             }
             

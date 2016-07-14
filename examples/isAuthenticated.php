@@ -1,10 +1,10 @@
 <?php
 
-include '_client.php';
+include_once '_includes.php';
 
 if ($fs->isAuthenticated()) {
   echo 'Authenticated';
 } else {
   echo 'Not Authenticated';
-  echo '<pre>',print_r($_SESSION, true),'<pre>';
+  prettyPrint($_SESSION);
 }
