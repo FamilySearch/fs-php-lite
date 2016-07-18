@@ -121,10 +121,12 @@ class FamilySearch
      */
     public function oauthResponse()
     {
-        $response = $this->post($this->identHost() . '/cis-web/oauth2/v3/token', null, null, [
-            'grant_type' => 'authorization_code',
-            'code' => $_GET['code'],
-            'client_id' => $this->appKey
+        $response = $this->post($this->identHost() . '/cis-web/oauth2/v3/token', [
+            'body' => [
+                'grant_type' => 'authorization_code',
+                'code' => $_GET['code'],
+                'client_id' => $this->appKey
+            ]
         ]);
         
         if ($response->statusCode === 200) {
@@ -165,72 +167,87 @@ class FamilySearch
      * Execute an HTTP GET
      * 
      * @param string $url URL
-     * @param array $queryParams Query parameters
-     * @param array $headers HTTP Request headers
+     * @param array $options
+     * @param array $options['query'] Query parameters
+     * @param array $options['headers'] HTTP Request headers
+     * @param string $options['body'] Request body data
      */
-    public function get($url, $queryParams = array(), $headers = array())
+    public function get($url, $options = array())
     {
-        return $this->request('GET', $url, $queryParams, $headers);
+        $options['method'] = 'GET';
+        return $this->request($url, $options);
     }
     
     /**
      * Execute an HTTP POST
      * 
      * @param string $url URL
-     * @param array $queryParams Query parameters
-     * @param array $headers HTTP Request headers
-     * @param string $body Request body data
+     * @param array $options
+     * @param array $options['query'] Query parameters
+     * @param array $options['headers'] HTTP Request headers
+     * @param string $options['body'] Request body data
      */
-    public function post($url, $queryParams = array(), $headers = array(), $body = '')
+    public function post($url, $options = array())
     {
-        return $this->request('POST', $url, $queryParams, $headers, $body);
+        $options['method'] = 'POST';
+        return $this->request($url, $options);
     }
     
     /**
      * Execute an HTTP request.
      * 
-     * @param string $method HTTP method
      * @param string $url URL
-     * @param array $queryParams Query parameters
-     * @param array $headers HTTP Request headers
-     * @param string $body Request body data
+     * @param array $options
+     * @param string $options['method'] HTTP method
+     * @param array $options['query'] Query parameters
+     * @param array $options['headers'] HTTP Request headers
+     * @param string $options['body'] Request body data
      * 
      * @throws Exception if curl fails
      * 
      * @return Response
      */
-    private function request($method, $url, $queryParams = array(), $headers = array(), $body = '')
+    private function request($url, $options = array())
     {
+        $options = array_merge([
+            'method' => 'GET',
+            'query' => array(),
+            'headers' => array(),
+            'body' => null
+        ], $options);
+        
         $request = curl_init();
         
         // HTTP Method
-        $this->setRequestMethod($request, $method);
+        $this->setRequestMethod($request, $options['method']);
         
         // Build the URL
-        $url = $this->buildRequestUrl($url, $queryParams);
+        $url = $this->buildRequestUrl($url, $options['query']);
         curl_setopt($request, CURLOPT_URL, $url);
         
         // Default HTTP headers
-        if (!is_array($headers)) {
-            $headers = [];
+        if (!is_array($options['headers'])) {
+            $options['headers'] = [];
         }
-        if (!isset($headers['Authorization']) && $this->getAccessToken()) {
-            $headers['Authorization'] = 'Bearer ' . $this->getAccessToken();
+        if (!isset($options['headers']['Authorization']) && $this->getAccessToken()) {
+            $options['headers']['Authorization'] = 'Bearer ' . $this->getAccessToken();
         }
-        if (!isset($headers['Accept']) && strpos($url, '/platform/') !== false) {
-            $headers['Accept'] = 'application/x-fs-v1+json';
+        if (!isset($options['headers']['Accept']) && strpos($url, '/platform/') !== false) {
+            $options['headers']['Accept'] = 'application/x-fs-v1+json';
         }
         
         // Set the body
-        if (is_array($body) && strpos($url, '/platform/') !== false) {
-           $headers['Content-Type'] = 'application/x-fs-v1+json';
-           $body = json_encode($body);
-        } else {
-           // This is currently only used for OAuth
-           $body = http_build_query($body, '', '&');
-        }
-        if ($body) {
-            curl_setopt($request, CURLOPT_POSTFIELDS, $body);
+        if ($options['body'] && ($options['method'] === 'POST' || $options['method'] === 'PUT')) {
+            if (is_array($options['body']) && strpos($url, '/platform/') !== false) {
+               $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
+               $body = json_encode($options['body']);
+            } else {
+               // This is currently only used for OAuth
+               $body = http_build_query($options['body'], '', '&');
+            }
+            if ($body) {
+                curl_setopt($request, CURLOPT_POSTFIELDS, $body);
+            }
         }
         
         // Process the HTTP headers.
@@ -238,7 +255,7 @@ class FamilySearch
         // Content-Type of application/x-www-form-urlencoded setting the POST
         // body as a string
         $headersList = [];
-        foreach ($headers as $key => $value) {
+        foreach ($options['headers'] as $key => $value) {
             $headersList[] = $key.': '.$value;
         }
         curl_setopt($request, CURLOPT_HTTPHEADER, $headersList); 
@@ -255,7 +272,7 @@ class FamilySearch
         if ($curlResponse) {
             $response = new stdClass;
             $response->curl = $request;
-            $response->requestHeaders = $headers;
+            $response->requestHeaders = $options['headers'];
             $response->requestBody = $body;
             $response->headers = array();
             $response->finalUrl = curl_getinfo($request, CURLINFO_EFFECTIVE_URL);
@@ -293,7 +310,7 @@ class FamilySearch
                 error_log("Redirecting $response->statusCode to $response->headers[Location]");
                 
                 // We don't include the body param because POSTs should never redirect
-                return $this->request($method, $response->headers['Location'], $queryParams, $responseHeaders);
+                return $this->request($response->headers['Location'], $options);
             }
             
             // Process JSON, if possible

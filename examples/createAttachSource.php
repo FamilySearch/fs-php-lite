@@ -34,9 +34,11 @@ if ($_GET['pid'] && $_GET['title']) {
       ]
     ];
   }
-  $createSourceResponse = $fs->post('/platform/sources/descriptions', null, null, [
-    'sourceDescriptions' => [
-      $sourceDescription
+  $createSourceResponse = $fs->post('/platform/sources/descriptions', [
+    'body' => [
+      'sourceDescriptions' => [
+        $sourceDescription
+      ]
     ]
   ]);
   
@@ -44,15 +46,17 @@ if ($_GET['pid'] && $_GET['title']) {
   
     // Attach the source to the person
     $attachUrl = '/platform/tree/persons/' . $_GET['pid'] . '/source-references';
-    $attachResponse = $fs->post($attachUrl, null, null, [
-      'persons' => [
-        [
-          'sources' => [
-            [
-              'description' => $createSourceResponse->headers['Location']
+    $attachResponse = $fs->post($attachUrl, [
+      'body' => [
+        'persons' => [
+          [
+            'sources' => [
+              [
+                'description' => $createSourceResponse->headers['Location']
+              ]
             ]
-          ]
-        ]  
+          ]  
+        ]
       ]
     ]);
     
