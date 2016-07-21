@@ -164,7 +164,7 @@ class FamilySearch
         return $response->statusCode === 200;
     }
     /**
-     * Execute an HTTP GET
+     * Execute an HTTP GET request
      * 
      * @param string $url URL
      * @param array $options
@@ -179,7 +179,7 @@ class FamilySearch
     }
     
     /**
-     * Execute an HTTP POST
+     * Execute an HTTP POST request
      * 
      * @param string $url URL
      * @param array $options
@@ -190,6 +190,21 @@ class FamilySearch
     public function post($url, $options = array())
     {
         $options['method'] = 'POST';
+        return $this->request($url, $options);
+    }
+    
+    /**
+     * Execute an HTTP HEAD request
+     * 
+     * @param string $url URL
+     * @param array $options
+     * @param array $options['query'] Query parameters
+     * @param array $options['headers'] HTTP Request headers
+     * @param string $options['body'] Request body data
+     */
+    public function head($url, $options = array())
+    {
+        $options['method'] = 'HEAD';
         return $this->request($url, $options);
     }
     
