@@ -51,7 +51,12 @@ class FamilySearch
      */
     private $accessToken;
     
-    public $_lastResponse;
+    /**
+     * Maximum number of times to retry when being throttled
+     * 
+     * @var integer
+     */
+    private $maxThrottledRetries = 5;
     
     /**
      * Construct a new FamilySearch Client
@@ -88,6 +93,10 @@ class FamilySearch
         
         if (isset($options['accessToken'])) {
             $this->accessToken = $options['accessToken'];
+        }
+        
+        if (isset($options['maxThrottledRetries'])) {
+            $this->maxThrottledRetries = $options['maxThrottledRetries'];
         }
     }
     
@@ -228,7 +237,8 @@ class FamilySearch
             'method' => 'GET',
             'query' => array(),
             'headers' => array(),
-            'body' => null
+            'body' => null,
+            '_retries' => 0
         ], $options);
         
         $request = curl_init();
@@ -237,8 +247,8 @@ class FamilySearch
         $this->setRequestMethod($request, $options['method']);
         
         // Build the URL
-        $url = $this->buildRequestUrl($url, $options['query']);
-        curl_setopt($request, CURLOPT_URL, $url);
+        $requestUrl = $this->buildRequestUrl($url, $options['query']);
+        curl_setopt($request, CURLOPT_URL, $requestUrl);
         
         // Default HTTP headers
         if (!is_array($options['headers'])) {
@@ -247,13 +257,13 @@ class FamilySearch
         if (!isset($options['headers']['Authorization']) && $this->getAccessToken()) {
             $options['headers']['Authorization'] = 'Bearer ' . $this->getAccessToken();
         }
-        if (!isset($options['headers']['Accept']) && strpos($url, '/platform/') !== false) {
+        if (!isset($options['headers']['Accept']) && strpos($requestUrl, '/platform/') !== false) {
             $options['headers']['Accept'] = 'application/x-fs-v1+json';
         }
         
         // Set the body
         if ($options['body'] && ($options['method'] === 'POST' || $options['method'] === 'PUT')) {
-            if (is_array($options['body']) && strpos($url, '/platform/') !== false) {
+            if (is_array($options['body']) && strpos($requestUrl, '/platform/') !== false) {
                $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
                $body = json_encode($options['body']);
             } else {
@@ -322,10 +332,24 @@ class FamilySearch
             // redirects ourself.
             if ($response->statusCode >= 300 && $response->statusCode < 400 && $response->headers['Location']) {
                 
-                error_log("Redirecting $response->statusCode to $response->headers[Location]");
-                
                 // We don't include the body param because POSTs should never redirect
-                return $this->request($response->headers['Location'], $options);
+                $redirectResponse = $this->request($response->headers['Location'], $options);
+                $redirectResponse->redirected = true;
+                $redirectResponse->originalUrl = $requestUrl;
+                return $redirectResponse;
+            }
+            
+            // Throttling
+            if ($response->statusCode === 429 && ++$options['_retries'] < $this->maxThrottledRetries) {
+                if ($response->headers['Retry-After']) {
+                    sleep(intval($response->headers['Retry-After']));
+                }
+                $throttledResponse = $this->request($url, $options);
+                $throttledResponse->throttled = true;
+                if (!isset($throttledResponse->retries)) {
+                    $throttledResponse->retries = $options['_retries'];
+                }
+                return $throttledResponse;
             }
             
             // Process JSON, if possible
@@ -334,8 +358,6 @@ class FamilySearch
                     $response->data = json_decode($response->body, true);
                 } catch (Exception $e) { }
             }
-            
-            $this->_lastResponse = $response;
             
             return $response;
         } else {
