@@ -3,6 +3,7 @@
 // Create and attach a source to a person
 
 include_once '_includes.php';
+include_once '_header.php';
 
 // Fetch a person if a person id has been provided
 if ($_GET['pid'] && $_GET['title']) {
@@ -44,6 +45,9 @@ if ($_GET['pid'] && $_GET['title']) {
   
   if ($createSourceResponse->statusCode === 201) {
   
+    echo '<h2>Create Source Response</h2>';
+    prettyPrint($createSourceResponse);
+  
     // Attach the source to the person
     $attachUrl = '/platform/tree/persons/' . $_GET['pid'] . '/source-references';
     $attachResponse = $fs->post($attachUrl, [
@@ -60,6 +64,7 @@ if ($_GET['pid'] && $_GET['title']) {
       ]
     ]);
     
+    echo '<h2>Attach Source Response</h2>';
     prettyPrint($attachResponse);
     
   } else {
@@ -110,7 +115,6 @@ else {
       
       input, textarea {
         width: 100%;
-        font: .8em arial;
       }
       
       textarea {
@@ -119,3 +123,5 @@ else {
     </style>
   <?php
 }
+
+include_once '_footer.php';

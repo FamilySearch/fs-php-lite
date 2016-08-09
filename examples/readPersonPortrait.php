@@ -3,6 +3,7 @@
 // Read the default portrait for a PID.
 
 include_once '_includes.php';
+include_once '_header.php';
 
 // Fetch a person if a person id has been provided
 if ($_GET['pid']) {
@@ -17,6 +18,7 @@ if ($_GET['pid']) {
     // Issue a GET request to the person's portrait link
     $portraitResponse = $fs->get($person['links']['portrait']['href']);
     
+    echo '<h2>Read Person Potrait Response</h2>';
     prettyPrint($portraitResponse);
   } else {
     echo '<h3>Error reading person ' . $_GET['pid'] . '</h3>';
@@ -35,3 +37,5 @@ else {
     </form>
   <?php
 }
+
+include_once '_footer.php';

@@ -1,6 +1,7 @@
 <?php
 
 include_once '_includes.php';
+include_once '_header.php';
 
 // First we get the current user which includes a url to the memories endpoint
 // for the user.
@@ -12,6 +13,7 @@ if ($userResponse->data) {
   
   $memoriesResponse = $fs->get($user['links']['artifacts']['href']);
   
+  echo '<h2>Read User Memories Response</h2>';
   prettyPrint($memoriesResponse);
   
 } else {
@@ -21,3 +23,5 @@ if ($userResponse->data) {
   prettyPrint($userResponse);
   
 }
+
+include_once '_footer.php';
