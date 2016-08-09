@@ -2,6 +2,11 @@
 
 Lite PHP SDK for the [FamilySearch API](https://familysearch.org/developers/).
 
+__Warning__: this SDK requires hard-coding the API endpoint URLs. That is
+considered bad practive when using the API. In most cases, FamilySearch does not
+consider URL changes as breaking changes. Read more about 
+[dealing with change](https://familysearch.org/developers/docs/guides/evolution).
+
 ## Usage
 
 ```php
