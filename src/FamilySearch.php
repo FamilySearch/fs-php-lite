@@ -179,7 +179,6 @@ class FamilySearch
      * @param array $options
      * @param array $options['query'] Query parameters
      * @param array $options['headers'] HTTP Request headers
-     * @param string $options['body'] Request body data
      */
     public function get($url, $options = array())
     {
@@ -209,11 +208,24 @@ class FamilySearch
      * @param array $options
      * @param array $options['query'] Query parameters
      * @param array $options['headers'] HTTP Request headers
-     * @param string $options['body'] Request body data
      */
     public function head($url, $options = array())
     {
         $options['method'] = 'HEAD';
+        return $this->request($url, $options);
+    }
+    
+    /**
+     * Execute an HTTP DELETE request
+     * 
+     * @param string $url URL
+     * @param array $options
+     * @param array $options['query'] Query parameters
+     * @param array $options['headers'] HTTP Request headers
+     */
+    public function delete($url, $options = array())
+    {
+        $options['method'] = 'DELETE';
         return $this->request($url, $options);
     }
     
@@ -301,6 +313,8 @@ class FamilySearch
             $response->requestBody = $body;
             $response->headers = array();
             $response->finalUrl = curl_getinfo($request, CURLINFO_EFFECTIVE_URL);
+            $response->redirected = false;
+            $response->throttled = false;
             
             // Headers regex
             $pattern = '#HTTP/\d\.\d.*?$.*?\r\n\r\n#ims';

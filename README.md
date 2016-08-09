@@ -62,4 +62,36 @@ $response->originalUrl;
 // If a request is throttled then the response will tell how many times it was
 // throttled until it finally succeeded.
 $response->retries;
+
+// You can POST too. The body may be an array or a string.
+$response = $fs->post('/platform/tree/persons/PPPP-PPP', [
+  'body' => $personData
+]);
+
+// The SDK defaults the Accept and Content-Type headers to application/x-fs-v1+json
+// for all /platform/ URLs. But that doesn't work for some endpoints that require
+// the atom data format so you'll need to set the headers yourself.
+$response = $fs->get('/platform/tree/persons/PPPP-PPP/matches?collection=records', [
+  'headers' => [
+    'Accept' => 'application/x-gedcomx-atom+json'  
+  ]
+]);
+
+// You can also pass the query parameters to the HTTP methods if you don't want
+// to construct the URL yourself.
+$response = $fs->get('/platform/tree/persons/PPPP-PPP/matches', [
+  'query' => [
+    'collection' => 'records'
+  ],
+  'headers' => [
+    'Accept' => 'application/x-gedcomx-atom+json'  
+  ]
+]);
+
+// Supported HTTP methods are `get()`, `post()`, `head()`, and `delete()`. They
+// all call the core `request()` method which has the same signature.
+$response = $fs->request('/platform/tree/persons/PPPP-PPP', [
+  'method' => 'POST',
+  'body' => $personData
+]);
 ```

@@ -5,9 +5,12 @@ include_once '_header.php';
 
 // Fetch the person's record hints if a person id has been provided
 if ($_GET['pid']) {
-  $response = $fs->get('/platform/tree/persons/' . $_GET['pid'] . '/matches?collection=records', [
+  $response = $fs->get('/platform/tree/persons/' . $_GET['pid'] . '/matches', [
+    'query' => [
+      'collection' => 'records'
+    ],
     'headers' => [
-      'Accept' => 'application/json'  
+      'Accept' => 'application/x-gedcomx-atom+json'  
     ]  
   ]);
   echo '<h2>Read Person Record Hints Response</h2>';
