@@ -1,0 +1,10 @@
+{
+    "name": "york-solutions/fs-php-lite",
+    "authors": [
+        {
+            "name": "Justin",
+            "email": "justincyork@gmail.com"
+        }
+    ],
+    "require": {}
+}
