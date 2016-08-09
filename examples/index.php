@@ -8,5 +8,6 @@ include_once '_header.php';
   <p>At the bottom of each example page is a link to the example's source code.</p>
 </div>
 
-<?
+<?php
+
 include_once '_footer.php';
