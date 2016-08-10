@@ -1,0 +1,31 @@
+[{
+    "request": {
+        "method": "POST",
+        "url": "https:\/\/identint.familysearch.org\/cis-web\/oauth2\/v3\/token",
+        "headers": {
+            "Host": "identint.familysearch.org",
+            "Content-Type": "application\/x-www-form-urlencoded"
+        },
+        "body": "grant_type=password&client_id=a02j000000CBv4gAAD&username=sdktester&password=1234sdkpass"
+    },
+    "response": {
+        "status": {
+            "http_version": "1.1",
+            "code": "200",
+            "message": "OK"
+        },
+        "headers": {
+            "Server": "Apache-Coyote\/1.1",
+            "Expires": "Tue, 03 Jul 2001 06:00:00 GMT",
+            "Last-Modified": "Wed Aug 10 21:30:58 GMT+00:00 2016",
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
+            "Pragma": "no-cache",
+            "Content-Type": "application\/json;charset=ISO-8859-1",
+            "Content-Language": "en-US",
+            "Content-Length": "185",
+            "Date": "Wed, 10 Aug 2016 21:30:57 GMT",
+            "Connection": "close"
+        },
+        "body": "{\"token\":\"USYS8F028400746939E20CD8AF1FFFF6217C_idses-int02.a.fsglobal.net\",\"token_type\":\"family_search\",\"access_token\":\"USYS8F028400746939E20CD8AF1FFFF6217C_idses-int02.a.fsglobal.net\"}"
+    }
+}]

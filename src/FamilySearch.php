@@ -124,7 +124,7 @@ class FamilySearch
     }
     
     /**
-     * Handle an OAuth response, exchanging a code for an access token.
+     * Handle an OAuth redirect response, exchanging a code for an access token.
      * 
      * @return string access token
      */
@@ -138,6 +138,40 @@ class FamilySearch
             ]
         ]);
         
+        return $this->oauthResponseHandler($response);
+    }
+    
+    /**
+     * Authenticate using the OAuth2 password grant type.
+     * 
+     * @param string $username
+     * @param string $password
+     * @return string access token
+     */
+    public function oauthPassword($username, $password)
+    {
+        $response = $this->post($this->identHost() . '/cis-web/oauth2/v3/token', [
+            'body' => [
+                'grant_type' => 'password',
+                'client_id' => $this->appKey,
+                'username' => $username,
+                'password' => $password
+            ],
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded'    
+            ]
+        ]);
+        
+        return $this->oauthResponseHandler($response);
+    }
+    
+    /**
+     * Common handler for a successful OAuth2 access token response
+     * 
+     * @param object $response
+     * @returns string access token
+     */
+    private function oauthResponseHandler($response){
         if ($response->statusCode === 200) {
             $this->accessToken = $response->data['access_token'];
             if ($this->sessions) {

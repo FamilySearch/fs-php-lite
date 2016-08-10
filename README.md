@@ -20,8 +20,7 @@ $fs = new FamilySearch([
   'redirectUri' => 'https://example.com/fs-redirect',
   
   // Tell it to automatically save and load the access token from $_SESSION. 
-  // Should the be the behavior by default?
-  'sessions' => true, 
+  'sessions' => true, // This defaults to true
   'sessionVariable' => 'FS_ACCESS_TOKEN',
   
   // Necessary for when the developer wants to store the accessToken somewhere
