@@ -39,9 +39,10 @@ $fs->oauthRedirect();
 // OAuth step 2: Exchange the code for an access token.
 //
 // This will automatically retrieve the code from $_GET and exchange it for
-// an access token. The access token is returned but doesn't need to be saved to
-// a variable if sessions are turned on.
-$fs->oauthResponse();
+// an access token. The access token is contained in the response object if the
+// request was successful. The token doesn't need to be saved to a variable if
+// sessions are enabled because the SDK will automatically save it.
+$response = $fs->oauthResponse();
 
 // Get the current user
 $response = $fs->get('/platform/users/current');

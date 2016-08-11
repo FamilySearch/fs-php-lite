@@ -9,7 +9,9 @@ class ClientTest extends ApiTestCase
      */
     public function testAuthenticate()
     {
-        $accessToken = $this->login();
-        $this->assertNotNull($accessToken);
+        $response = $this->login();
+        $this->assertEquals(200, $response->statusCode);
+        $this->assertObjectHasAttribute('data', $response);
+        $this->assertArrayHasKey('token', $response->data);
     }
 }

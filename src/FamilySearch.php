@@ -126,7 +126,7 @@ class FamilySearch
     /**
      * Handle an OAuth redirect response, exchanging a code for an access token.
      * 
-     * @return string access token
+     * @return object response
      */
     public function oauthResponse()
     {
@@ -146,7 +146,7 @@ class FamilySearch
      * 
      * @param string $username
      * @param string $password
-     * @return string access token
+     * @return object response
      */
     public function oauthPassword($username, $password)
     {
@@ -169,7 +169,7 @@ class FamilySearch
      * Common handler for a successful OAuth2 access token response
      * 
      * @param object $response
-     * @returns string access token
+     * @returns object response
      */
     private function oauthResponseHandler($response){
         if ($response->statusCode === 200) {
@@ -177,8 +177,8 @@ class FamilySearch
             if ($this->sessions) {
                 $_SESSION[$this->sessionVariable] = $this->accessToken;
             }
-            return $this->accessToken;
         }
+        return $response;
     }
     
     /**
