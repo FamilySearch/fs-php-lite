@@ -1,4 +1,6 @@
-# fs-php-lite
+# FamilySearch PHP Lite SDK
+
+[![Build Status](https://travis-ci.org/york-solutions/fs-php-lite.svg?branch=master)](https://travis-ci.org/york-solutions/fs-php-lite)
 
 Lite PHP SDK for the [FamilySearch API](https://familysearch.org/developers/).
 
