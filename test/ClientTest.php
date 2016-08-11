@@ -36,4 +36,19 @@ class FamilySearchTests extends ApiTestCase
         $this->assertResponseData($response);
     }
     
+    /**
+     * @vcr testDelete.json
+     */
+    public function testDelete()
+    {
+        $this->assertResponseOK($this->login());
+        $personId = $this->createPerson();
+        $response = $this->client->delete('/platform/tree/persons/' . $personId);
+        $this->assertResponseOK($response);
+        $response = $this->client->get('/platform/tree/persons/' . $personId);
+        $this->assertEquals(410, $response->statusCode);
+    }
+    
+    // Test redirect
+    
 }
