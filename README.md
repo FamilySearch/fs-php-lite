@@ -51,7 +51,7 @@ $response = $fs->get('/platform/users/current');
 $response->statusCode;     // Integer
 $response->statusText;     // String
 $response->headers;        // Array
-$response->finalUrl;       // String
+$response->effectiveUrl;   // String
 $response->body;           // String
 $response->requestMethod;  // String
 $response->requestHeaders; // Array
