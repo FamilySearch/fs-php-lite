@@ -346,7 +346,13 @@ class FamilySearch
             $response->requestHeaders = $options['headers'];
             $response->requestBody = $body;
             $response->headers = array();
-            $response->finalUrl = curl_getinfo($request, CURLINFO_EFFECTIVE_URL);
+            
+            // This throws an error during testing because phpvcr hasn't implemented this feature
+            try {
+                $response->finalUrl = curl_getinfo($request, CURLINFO_EFFECTIVE_URL);
+            } catch(Exception $e) {
+                // do nothing
+            }
             $response->redirected = false;
             $response->throttled = false;
             
