@@ -16,6 +16,15 @@ class FamilySearchTests extends ApiTestCase
     }
     
     /**
+     * @vcr testPost.json
+     */
+    public function testPost()
+    {
+        $this->assertResponseOK($this->login());
+        $this->assertNotNull($this->createPerson());
+    }
+    
+    /**
      * @vcr testGet.json
      */
     public function testGet()
@@ -26,4 +35,5 @@ class FamilySearchTests extends ApiTestCase
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
     }
+    
 }
