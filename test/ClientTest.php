@@ -49,6 +49,17 @@ class FamilySearchTests extends ApiTestCase
         $this->assertEquals(410, $response->statusCode);
     }
     
-    // Test redirect
+    /**
+     * @vcr testRedirect.json
+     */
+    public function testRedirect()
+    {
+        $this->assertResponseOK($this->login());
+        $response = $this->client->get('/platform/users/current');
+        $this->assertTrue($response->redirected);
+        $this->assertEquals('/platform/users/current', $response->originalUrl);
+        
+        // $this->assertEquals('/platform/users/current', $response->finalUrl);
+    }
     
 }
