@@ -2,16 +2,28 @@
 
 namespace FamilySearch\Tests;
 
-class ClientTest extends ApiTestCase
+class FamilySearchTests extends ApiTestCase
 {
     /**
-     * @vcr ClientTests/testAuthenticate.json
+     * @vcr testAuthenticate.json
      */
     public function testAuthenticate()
     {
         $response = $this->login();
-        $this->assertEquals(200, $response->statusCode);
-        $this->assertObjectHasAttribute('data', $response);
+        $this->assertResponseOK($response);
+        $this->assertResponseData($response);
         $this->assertArrayHasKey('token', $response->data);
+    }
+    
+    /**
+     * @vcr testGet.json
+     */
+    public function testGet()
+    {
+        $this->assertResponseOK($this->login());
+        $personId = $this->createPerson();
+        $response = $this->client->get('/platform/tree/persons/' . $personId);
+        $this->assertResponseOK($response);
+        $this->assertResponseData($response);
     }
 }

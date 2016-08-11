@@ -308,6 +308,7 @@ class FamilySearch
         }
         
         // Set the body
+        $body = null;
         if ($options['body'] && ($options['method'] === 'POST' || $options['method'] === 'PUT')) {
             if (is_array($options['body']) && strpos($requestUrl, '/platform/') !== false) {
                $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
@@ -343,6 +344,7 @@ class FamilySearch
         if ($curlResponse) {
             $response = new stdClass;
             $response->curl = $request;
+            $response->requestMethod = $options['method'];
             $response->requestHeaders = $options['headers'];
             $response->requestBody = $body;
             $response->headers = array();

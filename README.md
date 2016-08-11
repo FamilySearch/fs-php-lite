@@ -53,6 +53,7 @@ $response->statusText;     // String
 $response->headers;        // Array
 $response->finalUrl;       // String
 $response->body;           // String
+$response->requestMethod;  // String
 $response->requestHeaders; // Array
 $response->requestBody;    // String
 $response->redirected;     // Boolean; defaults to false
