@@ -9,6 +9,9 @@ considered bad practive when using the API. In most cases, FamilySearch does not
 consider URL changes as breaking changes. Read more about 
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
+There is a sample app in the `/examples` directory that is deployed to 
+http://fs-php-lite-sdk.herokuapp.com/examples/.
+
 ## Usage
 
 ```php
