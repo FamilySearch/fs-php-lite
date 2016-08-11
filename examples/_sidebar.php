@@ -13,6 +13,7 @@
       <a class="list-group-item" href="readPersonDuplicates.php">Read Person Duplicates</a>
       <a class="list-group-item" href="readPersonRecordHints.php">Read Person Record Hints</a>
       <a class="list-group-item" href="readUserMemories.php">Read User Memories</a>
+      <a class="list-group-item" href="createPerson.php">Create Person</a>
       <a class="list-group-item" href="createAttachSource.php">Create and Attach a Source</a>
       <a class="list-group-item" href="triggerThrottling.php">Trigger Throttling</a>
     </div>
