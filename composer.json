@@ -6,8 +6,8 @@
             "email": "justincyork@gmail.com"
         }
     ],
-    "require": {},
     "require-dev": {
+        "gedcomx/gedcomx-php": "^3.0",
         "php-vcr/php-vcr": "^1.2",
         "phpunit/phpunit": "^4.8",
         "php-vcr/phpunit-testlistener-vcr": "^1.1"

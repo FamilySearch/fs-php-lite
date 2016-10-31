@@ -74,6 +74,13 @@ class FamilySearch
      */
     private $userAgent;
     
+    /*
+     * Whether we will use gedcomx-php objects for requests and responses
+     * 
+     * @var boolean
+     */
+    private $objects = false;
+    
     /**
      * Construct a new FamilySearch Client
      * 
@@ -122,6 +129,10 @@ class FamilySearch
         
         if (isset($options['maxThrottledRetries'])) {
             $this->maxThrottledRetries = $options['maxThrottledRetries'];
+        }
+        
+        if (isset($options['objects']) && is_bool($options['objects'])) {
+            $this->objects = $options['objects'];
         }
     }
     
@@ -433,9 +444,28 @@ class FamilySearch
             }
             
             // Process JSON, if possible
-            if( isset($response->headers['Content-Type']) && strpos($response->headers['Content-Type'], 'json') !== false) {
+            if (isset($response->headers['Content-Type']) && strpos($response->headers['Content-Type'], 'json') !== false) {
                 try {
                     $response->data = json_decode($response->body, true);
+                    
+                    // Instantiate objects via gedcomx-php when configured
+                    if ($response->data && $this->objects){
+                        
+                        // Atom Feed
+                        if (isset($response->data->entries)){
+                            $response->gedcomx = new \Gedcomx\Atom\Feed($response->data);
+                        } 
+                        
+                        // OAuth token success response
+                        else if (isset($response->data['access_token'])) {
+                            // TODO
+                        } 
+                        
+                        // GedcomX
+                        else {
+                            $response->gedcomx = new \Gedcomx\Extensions\FamilySearch\FamilySearchPlatform($response->data);
+                        }
+                    }
                 } catch (Exception $e) { }
             }
             
