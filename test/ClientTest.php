@@ -70,8 +70,8 @@ class FamilySearchTests extends ApiTestCase
         $this->assertResponseOK($this->login());
         $response = $this->client->get('/platform/tree/current-person');
         $this->assertTrue($response->redirected);
-        $this->assertEquals('https://sandbox.familysearch.org/platform/tree/current-person', $response->originalUrl);
-        $this->assertEquals('https://sandbox.familysearch.org/platform/tree/persons/KW7G-28J', $response->effectiveUrl);
+        $this->assertEquals('https://integration.familysearch.org/platform/tree/current-person', $response->originalUrl);
+        $this->assertEquals('https://integration.familysearch.org/platform/tree/persons/KW7G-28J', $response->effectiveUrl);
     }
     
 }

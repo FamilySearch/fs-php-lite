@@ -8,11 +8,11 @@ class FamilySearch
     
     /**
      * The FamilySearch reference or environment to target. Valid values are
-     * 'sandbox', 'beta', and 'production'.
+     * 'integration', 'beta', and 'production'.
      * 
      * @var string
      */
-    private $environment = 'sandbox';
+    private $environment = 'integration';
     
     /**
      * The application key assigned when your application was registered.
@@ -65,7 +65,7 @@ class FamilySearch
      */
     public function __construct($options = array())
     {
-        if (isset($options['environment']) && in_array($options['environment'], ['production','beta','sandbox'])) {
+        if (isset($options['environment']) && in_array($options['environment'], ['production','beta','integration'])) {
             $this->environment = $options['environment'];
         }
         
@@ -487,7 +487,7 @@ class FamilySearch
             case 'beta':
                 return 'https://identbeta.familysearch.org';
             default:
-                return 'https://identint.familysearch.org';
+                return 'https://integration.familysearch.org';
         }
     }
     
@@ -504,7 +504,7 @@ class FamilySearch
             case 'beta':
                 return 'https://beta.familysearch.org';
             default:
-                return 'https://sandbox.familysearch.org';
+                return 'https://integration.familysearch.org';
         }
     }
     
