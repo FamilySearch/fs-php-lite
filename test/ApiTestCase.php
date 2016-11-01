@@ -18,14 +18,12 @@ abstract class ApiTestCase extends \PHPUnit_Framework_TestCase
     /**
      * Automatically called by PHPUnit before each test is run. This resets
      * the client to a fresh non-authenticated state.
-     * 
-     * @param array $options Options for the FamilySearch client
      */
-    public function setUp($options = [])
+    public function setUp()
     {
-        $this->client = new \FamilySearch(array_merge([
+        $this->client = new \FamilySearch([
             'appKey' => SandboxCredentials::API_KEY
-        ], $options));
+        ]);
     }
     
     /**

@@ -4,8 +4,15 @@ namespace FamilySearch\Tests;
 
 class GedcomxPHPTest extends ApiTestCase
 {
-    public function setUp(){
-        parent::setUp([
+    
+    /**
+     * Automatically called by PHPUnit before each test is run. This resets
+     * the client to a fresh non-authenticated state.
+     */
+    public function setUp()
+    {
+        $this->client = new \FamilySearch([
+            'appKey' => SandboxCredentials::API_KEY,
             'objects' => true
         ]);
     }
@@ -19,9 +26,6 @@ class GedcomxPHPTest extends ApiTestCase
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
         $this->assertArrayHasKey('token', $response->data);
-        print_r($response->data);
-        print_r(isset($response->data['access_token']));
-        print_r($response->gedcomx->toArray());
         $this->assertNotHasGedcomxObject($response);
     }
     
@@ -31,7 +35,9 @@ class GedcomxPHPTest extends ApiTestCase
     public function testPost()
     {
         $this->assertResponseOK($this->login());
-        $this->assertNotNull($this->createPerson());
+        $response = $this->createPerson();
+        $this->assertNotNull($response);
+        $this->assertNotHasGedcomxObject($response);
     }
     
     /**
@@ -73,6 +79,7 @@ class GedcomxPHPTest extends ApiTestCase
         $this->assertResponseOK($response);
         $response = $this->client->get('/platform/tree/persons/' . $personId);
         $this->assertEquals(410, $response->statusCode);
+        $this->assertHasGedcomxObject($response);
     }
     
     /**
@@ -85,6 +92,7 @@ class GedcomxPHPTest extends ApiTestCase
         $this->assertTrue($response->redirected);
         $this->assertEquals('https://integration.familysearch.org/platform/tree/current-person', $response->originalUrl);
         $this->assertEquals('https://integration.familysearch.org/platform/tree/persons/KW7G-28J', $response->effectiveUrl);
+        $this->assertHasGedcomxObject($response);
     }
     
     private function assertHasGedcomxObject($response)
