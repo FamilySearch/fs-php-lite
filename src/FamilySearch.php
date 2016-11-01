@@ -351,13 +351,27 @@ class FamilySearch
         // Set the body
         $body = null;
         if ($options['body'] && ($options['method'] === 'POST' || $options['method'] === 'PUT')) {
+            
+            //error_log($this->objects);
+            //error_log(is_object($options['body']) === 'object' && method_exists($options['body'], 'toArray'));
+            
+            // PHP array
             if (is_array($options['body']) && strpos($requestUrl, '/platform/') !== false) {
                $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
                $body = json_encode($options['body']);
-            } else {
-               // This is currently only used for OAuth
+            } 
+            
+            // gedcomx-php object
+            else if ($this->objects && is_object($options['body']) && method_exists($options['body'], 'toArray')) {
+                $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
+                $body = json_encode($options['body']->toArray());
+            } 
+            
+            // This is currently only used for OAuth
+            else {
                $body = http_build_query($options['body'], '', '&');
             }
+            
             if ($body) {
                 curl_setopt($request, CURLOPT_POSTFIELDS, $body);
             }

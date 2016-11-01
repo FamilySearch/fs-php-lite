@@ -18,7 +18,7 @@ class GedcomxPHPTest extends ApiTestCase
     }
     
     /**
-     * @vcr testAuthenticate.json
+     * @vcr gedcomx/testAuthenticate.json
      */
     public function testAuthenticate()
     {
@@ -30,7 +30,7 @@ class GedcomxPHPTest extends ApiTestCase
     }
     
     /**
-     * @vcr testPost.json
+     * @vcr gedcomx/testPost.json
      */
     public function testPost()
     {
@@ -41,7 +41,7 @@ class GedcomxPHPTest extends ApiTestCase
     }
     
     /**
-     * @vcr testGet.json
+     * @vcr gedcomx/testGet.json
      */
     public function testGet()
     {
@@ -55,7 +55,7 @@ class GedcomxPHPTest extends ApiTestCase
     }
     
     /**
-     * @vcr testHead.json
+     * @vcr gedcomx/testHead.json
      */
     public function testHead()
     {
@@ -69,7 +69,7 @@ class GedcomxPHPTest extends ApiTestCase
     }
     
     /**
-     * @vcr testDelete.json
+     * @vcr gedcomx/testDelete.json
      */
     public function testDelete()
     {
@@ -83,7 +83,7 @@ class GedcomxPHPTest extends ApiTestCase
     }
     
     /**
-     * @vcr testRedirect.json
+     * @vcr gedcomx/testRedirect.json
      */
     public function testRedirect()
     {
@@ -93,6 +93,19 @@ class GedcomxPHPTest extends ApiTestCase
         $this->assertEquals('https://integration.familysearch.org/platform/tree/current-person', $response->originalUrl);
         $this->assertEquals('https://integration.familysearch.org/platform/tree/persons/KW7G-28J', $response->effectiveUrl);
         $this->assertHasGedcomxObject($response);
+    }
+    
+    /**
+     * Create a person and return the person's ID
+     *
+     * @return string person ID
+     */
+    protected function createPerson()
+    {
+        $response = $this->client->post('/platform/tree/persons', [
+            'body' => new \Gedcomx\Extensions\FamilySearch\FamilySearchPlatform($this->personData())
+        ]);
+        return $response->headers['X-ENTITY-ID'];
     }
     
     private function assertHasGedcomxObject($response)
