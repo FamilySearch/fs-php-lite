@@ -352,9 +352,6 @@ class FamilySearch
         $body = null;
         if ($options['body'] && ($options['method'] === 'POST' || $options['method'] === 'PUT')) {
             
-            //error_log($this->objects);
-            //error_log(is_object($options['body']) === 'object' && method_exists($options['body'], 'toArray'));
-            
             // PHP array
             if (is_array($options['body']) && strpos($requestUrl, '/platform/') !== false) {
                $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
