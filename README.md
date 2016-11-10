@@ -30,10 +30,13 @@ $fs = new FamilySearch([
   
   // Necessary for when the developer wants to store the accessToken somewhere
   // besides $_SESSION
-  'accessToken' => ''
+  'accessToken' => '',
   
   // How many times should a throttled response be retried? Defaults to 5
-  'maxThrottledRetries' => 5
+  'maxThrottledRetries' => 5,
+  
+  // Activate pending modifications
+  'pendingModifications' => ['consolidate-redundant-resources', 'current-person-401']
 ]);
 
 // OAuth step 1: Redirect

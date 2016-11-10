@@ -59,6 +59,13 @@ class FamilySearch
     private $maxThrottledRetries = 5;
     
     /**
+     * Pending modifications
+     * 
+     * @var string
+     */
+    private $pendingModifications;
+    
+    /**
      * Construct a new FamilySearch Client
      * 
      * @param array $options
@@ -83,6 +90,10 @@ class FamilySearch
         
         if (isset($options['sessionVariable'])) {
             $this->sessionVariable = $options['sessionVariable'];
+        }
+        
+        if (isset($options['pendingModifications'])) {
+            $this->pendingModifications = implode(',', $options['pendingModifications']);
         }
         
         // Load the access token from the session first so that it can be
@@ -305,6 +316,9 @@ class FamilySearch
         }
         if (!isset($options['headers']['Accept']) && strpos($requestUrl, '/platform/') !== false) {
             $options['headers']['Accept'] = 'application/x-fs-v1+json';
+        }
+        if (isset($this->pendingModifications)) {
+            $options['headers']['X-FS-Feature-Tag'] = $this->pendingModifications;
         }
         
         // Set the body
