@@ -91,4 +91,23 @@ class FamilySearchTests extends ApiTestCase
         $this->assertTrue($response->redirected);
     }
     
+    /**
+     * @vcr testUserAgent.json
+     */
+    public function testUserAgent()
+    {
+        $this->client = new \FamilySearch([
+            'appKey' => SandboxCredentials::API_KEY,
+            'userAgent' => 'myApp/1.2.3'
+        ]);
+        $this->assertResponseOK($this->login());
+        $response = $this->client->get('https://httpbin.org/user-agent');
+        $this->assertResponseOK($response);
+        $this->assertResponseData($response);
+        $this->assertTrue(strpos($response->requestHeaders['User-Agent'], 'FS-PHP-Lite') === 0);
+        $this->assertTrue(strpos($response->requestHeaders['User-Agent'], 'curl') !== false);
+        $this->assertTrue(strpos($response->requestHeaders['User-Agent'], 'PHP') !== false);
+        $this->assertTrue(strpos($response->requestHeaders['User-Agent'], 'myApp/1.2.3') !== false);
+    }
+    
 }

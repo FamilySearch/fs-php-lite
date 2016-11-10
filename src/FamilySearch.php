@@ -6,6 +6,8 @@
 class FamilySearch 
 {
     
+    const VERSION = '1.2.0';
+    
     /**
      * The FamilySearch reference or environment to target. Valid values are
      * 'integration', 'beta', and 'production'.
@@ -66,6 +68,13 @@ class FamilySearch
     private $pendingModifications;
     
     /**
+     * User agent
+     * 
+     * @var string
+     */
+    private $userAgent;
+    
+    /**
      * Construct a new FamilySearch Client
      * 
      * @param array $options
@@ -94,6 +103,11 @@ class FamilySearch
         
         if (isset($options['pendingModifications'])) {
             $this->pendingModifications = implode(',', $options['pendingModifications']);
+        }
+        
+        $this->userAgent = self::defaultUseragent();
+        if (isset($options['userAgent'])) {
+            $this->userAgent .= ' ' . $options['userAgent'];
         }
         
         // Load the access token from the session first so that it can be
@@ -321,6 +335,8 @@ class FamilySearch
             $options['headers']['X-FS-Feature-Tag'] = $this->pendingModifications;
         }
         
+        $options['headers']['User-Agent'] = $this->userAgent;
+        
         // Set the body
         $body = null;
         if ($options['body'] && ($options['method'] === 'POST' || $options['method'] === 'PUT')) {
@@ -520,6 +536,16 @@ class FamilySearch
             default:
                 return 'https://integration.familysearch.org';
         }
+    }
+    
+    /**
+     * Calculate the default user agent
+     * 
+     * @return string
+     */
+    private static function defaultUseragent()
+    {
+        return 'FS-PHP-Lite/' . self::VERSION . ' curl/' . \curl_version()['version'] . ' PHP/' . PHP_VERSION;
     }
     
 }

@@ -36,7 +36,10 @@ $fs = new FamilySearch([
   'maxThrottledRetries' => 5,
   
   // Activate pending modifications
-  'pendingModifications' => ['consolidate-redundant-resources', 'current-person-401']
+  'pendingModifications' => ['consolidate-redundant-resources', 'current-person-401'],
+  
+  // Modify the default user agent by appending this value
+  'userAgent' => 'myApp/1.2.3'
 ]);
 
 // OAuth step 1: Redirect
