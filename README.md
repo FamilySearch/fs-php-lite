@@ -39,7 +39,10 @@ $fs = new FamilySearch([
   'pendingModifications' => ['consolidate-redundant-resources', 'current-person-401'],
   
   // Modify the default user agent by appending this value
-  'userAgent' => 'myApp/1.2.3'
+  'userAgent' => 'myApp/1.2.3',
+  
+  // Enable optional serialization and deserialization with objects via gedcomx-php
+  'objects' => true
 ]);
 
 // OAuth step 1: Redirect
@@ -112,3 +115,26 @@ $response = $fs->request('/platform/tree/persons/PPPP-PPP', [
   'body' => $personData
 ]);
 ```
+
+## Serialization with gedcomx-php
+
+When the `objects` configuration option is set to true, the 
+[gedcomx-php](https://github.com/FamilySearch/gedcomx-php) library can be used
+for serialization from objects for requests and deserialization into objects
+for responses.
+
+```php
+$fs = new FamilySearch({
+    'objects' => true
+});
+
+$response = $fs->post('/platform/tree/persons', [
+    'body' => new \Gedcomx\Extensions\FamilySearch\FamilySearchPlatform([
+        'persons' => $personData
+    ])
+]);
+
+$persons = $response->gedcomx->getPersons();
+```
+
+gedcomx-php must be installed and included separately.
