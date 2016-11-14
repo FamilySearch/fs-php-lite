@@ -31,6 +31,5 @@
     \VCR\VCR::configure()->setCassettePath('test/fixtures');
     
     // Only add curl hooks to the SDK src
-    //\VCR\VCR::configure()->setWhiteList(['src']);
     \VCR\VCR::configure()->setBlackList(['vendor']);
     \VCR\VCR::configure()->enableLibraryHooks(['curl']);

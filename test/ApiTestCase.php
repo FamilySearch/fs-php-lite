@@ -41,7 +41,7 @@ abstract class ApiTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return string person ID
      */
-    public function createPerson()
+    protected function createPerson()
     {
         $response = $this->client->post('/platform/tree/persons', [
             'body' => $this->personData()    
@@ -75,7 +75,7 @@ abstract class ApiTestCase extends \PHPUnit_Framework_TestCase
      * 
      * @return array person data
      */
-    private function personData()
+    protected function personData()
     {
         if(!isset(self::$personData)){
             self::$personData = $this->loadPersonData();
