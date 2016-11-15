@@ -130,11 +130,16 @@ $fs = new FamilySearch({
 
 $response = $fs->post('/platform/tree/persons', [
     'body' => new \Gedcomx\Extensions\FamilySearch\FamilySearchPlatform([
-        'persons' => $personData
+        'persons' => [ $personData ]
     ])
 ]);
 
 $persons = $response->gedcomx->getPersons();
 ```
+
+When a response body is present, it will be deserialized as either an 
+[Atom Feed](http://familysearch.github.io/gedcomx-php/class-Gedcomx.Atom.Feed.html)
+or a [FamilySearchPlatform](http://familysearch.github.io/gedcomx-php/class-Gedcomx.Extensions.FamilySearch.FamilySearchPlatform.html)
+object.
 
 gedcomx-php must be installed and included separately.
