@@ -25,8 +25,8 @@ class GedcomxPHPTest extends ApiTestCase
         $response = $this->login();
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
-        $this->assertArrayHasKey('token', $response->data);
-        $this->assertNotHasGedcomxObject($response);
+        $this->assertArrayHasKey('access_token', $response->data);
+        $this->assertHasGedcomxObject($response);
     }
     
     /**

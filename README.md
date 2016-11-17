@@ -142,4 +142,5 @@ When a response body is present, it will be deserialized as either an
 or a [FamilySearchPlatform](http://familysearch.github.io/gedcomx-php/class-Gedcomx.Extensions.FamilySearch.FamilySearchPlatform.html)
 object.
 
-gedcomx-php must be installed and included separately.
+gedcomx-php must be installed and included separately. gedcomx-php version 3.1.2
+or later is required.

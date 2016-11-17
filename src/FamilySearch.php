@@ -463,13 +463,13 @@ class FamilySearch
                     if ($response->data && $this->objects){
                         
                         // Atom Feed
-                        if (isset($response->data->entries)){
+                        if (isset($response->data['entries'])){
                             $response->gedcomx = new \Gedcomx\Atom\Feed($response->data);
                         } 
                         
                         // OAuth token success response
-                        else if (isset($response->data['access_token'])) {
-                            // TODO
+                        else if (isset($response->data['access_token']) || isset($response->data['error'])) {
+                            $response->gedcomx = new \Gedcomx\Extensions\FamilySearch\OAuth2($response->data);
                         } 
                         
                         // GedcomX

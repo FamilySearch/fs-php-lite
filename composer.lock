@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "cf0f384df2facc08729afb5988b1233f",
-    "content-hash": "63d6974c63c631ec4c755eb413a23171",
+    "hash": "20a6608ccc92cfe3a28306a09cb6b413",
+    "content-hash": "5169f1ca4e2416a49682d7484f324e79",
     "packages": [],
     "packages-dev": [
         {
@@ -119,23 +119,23 @@
         },
         {
             "name": "gedcomx/gedcomx-php",
-            "version": "3.0.0",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FamilySearch/gedcomx-php.git",
-                "reference": "fe4ef23985d3de6f4f67878465671478d8db23e3"
+                "reference": "f0b1ccb5d7110edd35765b48ff04f3b68b00e35c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FamilySearch/gedcomx-php/zipball/fe4ef23985d3de6f4f67878465671478d8db23e3",
-                "reference": "fe4ef23985d3de6f4f67878465671478d8db23e3",
+                "url": "https://api.github.com/repos/FamilySearch/gedcomx-php/zipball/f0b1ccb5d7110edd35765b48ff04f3b68b00e35c",
+                "reference": "f0b1ccb5d7110edd35765b48ff04f3b68b00e35c",
                 "shasum": ""
             },
             "require-dev": {
                 "fzaninotto/faker": "1.4.*",
                 "intervention/image": "2.0.*",
                 "phpunit/phpunit": "3.7.*",
-                "satooshi/php-coveralls": "1.0.*"
+                "satooshi/php-coveralls": "dev-travis-fix"
             },
             "type": "library",
             "autoload": {
@@ -161,7 +161,7 @@
                 "genealogy",
                 "sdk"
             ],
-            "time": "2016-09-20 15:42:23"
+            "time": "2016-11-17 18:39:31"
         },
         {
             "name": "php-vcr/php-vcr",
@@ -648,16 +648,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "1.4.8",
+            "version": "1.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da"
+                "reference": "3b402f65a4cc90abf6e1104e388b896ce209631b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
-                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3b402f65a4cc90abf6e1104e388b896ce209631b",
+                "reference": "3b402f65a4cc90abf6e1104e388b896ce209631b",
                 "shasum": ""
             },
             "require": {
@@ -693,7 +693,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2015-09-15 10:49:45"
+            "time": "2016-11-15 14:06:22"
         },
         {
             "name": "phpunit/phpunit",
@@ -825,16 +825,16 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "937efb279bd37a375bcadf584dec0726f84dbf22"
+                "reference": "ce2bda23a56456f19e35d98241446b581f648c14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/937efb279bd37a375bcadf584dec0726f84dbf22",
-                "reference": "937efb279bd37a375bcadf584dec0726f84dbf22",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/ce2bda23a56456f19e35d98241446b581f648c14",
+                "reference": "ce2bda23a56456f19e35d98241446b581f648c14",
                 "shasum": ""
             },
             "require": {
@@ -885,7 +885,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2015-07-26 15:48:44"
+            "time": "2016-11-17 14:39:37"
         },
         {
             "name": "sebastian/diff",
@@ -1109,16 +1109,16 @@
         },
         {
             "name": "sebastian/recursion-context",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/recursion-context.git",
-                "reference": "79860854756415e1cec8d186c9cf261cafd87dfc"
+                "reference": "938df7a6478e72795e5f8266cff24d06e3136f2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/79860854756415e1cec8d186c9cf261cafd87dfc",
-                "reference": "79860854756415e1cec8d186c9cf261cafd87dfc",
+                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/938df7a6478e72795e5f8266cff24d06e3136f2e",
+                "reference": "938df7a6478e72795e5f8266cff24d06e3136f2e",
                 "shasum": ""
             },
             "require": {
@@ -1158,7 +1158,7 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
-            "time": "2016-11-14 15:54:23"
+            "time": "2016-11-15 06:55:36"
         },
         {
             "name": "sebastian/version",
