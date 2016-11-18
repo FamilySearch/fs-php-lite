@@ -1,5 +1,6 @@
 # FamilySearch PHP Lite SDK
 
+[![Packagist](https://img.shields.io/packagist/v/familysearch/fs-php-lite.svg)](https://packagist.org/packages/familysearch/fs-php-lite)
 [![Build Status](https://travis-ci.org/FamilySearch/fs-php-lite.svg?branch=master)](https://travis-ci.org/FamilySearch/fs-php-lite)
 
 Lite PHP SDK for the [FamilySearch API](https://familysearch.org/developers/).
