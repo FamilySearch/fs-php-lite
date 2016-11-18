@@ -6,6 +6,7 @@
             "email": "justincyork@gmail.com"
         }
     ],
+    "license": "Apache-2.0",
     "require-dev": {
         "gedcomx/gedcomx-php": "^3.1.2",
         "php-vcr/php-vcr": "^1.2",
