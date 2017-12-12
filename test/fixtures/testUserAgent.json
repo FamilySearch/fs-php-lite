@@ -5,7 +5,7 @@
         "headers": {
             "Host": "integration.familysearch.org",
             "Content-Type": "application\/x-www-form-urlencoded",
-            "User-Agent": "FS-PHP-Lite\/1.1.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17 myApp\/1.2.3"
+            "User-Agent": "FS-PHP-Lite\/1.2.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17 myApp\/1.2.3"
         },
         "body": "grant_type=password&client_id=a02j000000CBv4gAAD&username=sdktester&password=1234sdkpass"
     },
@@ -18,16 +18,16 @@
         "headers": {
             "Server": "Apache-Coyote\/1.1",
             "Expires": "Tue, 03 Jul 2001 06:00:00 GMT",
-            "Last-Modified": "Thu Nov 10 21:37:57 GMT+00:00 2016",
+            "Last-Modified": "Tue Dec 12 16:06:02 GMT 2017",
             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
             "Pragma": "no-cache",
             "Content-Type": "application\/json;charset=ISO-8859-1",
             "Content-Language": "en-US",
             "Content-Length": "185",
-            "Date": "Thu, 10 Nov 2016 21:37:56 GMT",
+            "Date": "Tue, 12 Dec 2017 16:06:01 GMT",
             "Connection": "close"
         },
-        "body": "{\"token\":\"USYS4577D98D73A5A3536EDFEBA47D962F30_idses-int02.a.fsglobal.net\",\"token_type\":\"family_search\",\"access_token\":\"USYS4577D98D73A5A3536EDFEBA47D962F30_idses-int02.a.fsglobal.net\"}"
+        "body": "{\"access_token\":\"USYSBA8E4378E27FCF0F3ACA7011F62E9557_idses-int02.a.fsglobal.net\",\"token_type\":\"family_search\",\"token\":\"USYSBA8E4378E27FCF0F3ACA7011F62E9557_idses-int02.a.fsglobal.net\"}"
     }
 },{
     "request": {
@@ -35,8 +35,8 @@
         "url": "https:\/\/httpbin.org\/user-agent",
         "headers": {
             "Host": "httpbin.org",
-            "Authorization": "Bearer USYS4577D98D73A5A3536EDFEBA47D962F30_idses-int02.a.fsglobal.net",
-            "User-Agent": "FS-PHP-Lite\/1.1.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17 myApp\/1.2.3"
+            "Authorization": "Bearer USYSBA8E4378E27FCF0F3ACA7011F62E9557_idses-int02.a.fsglobal.net",
+            "User-Agent": "FS-PHP-Lite\/1.2.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17 myApp\/1.2.3"
         }
     },
     "response": {
@@ -46,14 +46,17 @@
             "message": "OK"
         },
         "headers": {
-            "Server": "nginx",
-            "Date": "Thu, 10 Nov 2016 21:36:56 GMT",
-            "Content-Type": "application\/json",
-            "Content-Length": "86",
             "Connection": "keep-alive",
+            "Server": "meinheld\/0.6.1",
+            "Date": "Tue, 12 Dec 2017 16:06:02 GMT",
+            "Content-Type": "application\/json",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": "true"
+            "Access-Control-Allow-Credentials": "true",
+            "X-Powered-By": "Flask",
+            "X-Processed-Time": "0.000622987747192",
+            "Content-Length": "86",
+            "Via": "1.1 vegur"
         },
-        "body": "{\n  \"user-agent\": \"FS-PHP-Lite\/1.1.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17 myApp\/1.2.3\"\n}\n"
+        "body": "{\n  \"user-agent\": \"FS-PHP-Lite\/1.2.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17 myApp\/1.2.3\"\n}\n"
     }
 }]

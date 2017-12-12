@@ -4,7 +4,8 @@
         "url": "https:\/\/integration.familysearch.org\/cis-web\/oauth2\/v3\/token",
         "headers": {
             "Host": "integration.familysearch.org",
-            "Content-Type": "application\/x-www-form-urlencoded"
+            "Content-Type": "application\/x-www-form-urlencoded",
+            "User-Agent": "FS-PHP-Lite\/1.2.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17"
         },
         "body": "grant_type=password&client_id=a02j000000CBv4gAAD&username=sdktester&password=1234sdkpass"
     },
@@ -17,15 +18,15 @@
         "headers": {
             "Server": "Apache-Coyote\/1.1",
             "Expires": "Tue, 03 Jul 2001 06:00:00 GMT",
-            "Last-Modified": "Tue Nov 01 21:16:49 GMT+00:00 2016",
+            "Last-Modified": "Tue Dec 12 16:06:03 GMT 2017",
             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
             "Pragma": "no-cache",
             "Content-Type": "application\/json;charset=ISO-8859-1",
             "Content-Language": "en-US",
             "Content-Length": "185",
-            "Date": "Tue, 01 Nov 2016 21:16:49 GMT",
+            "Date": "Tue, 12 Dec 2017 16:06:02 GMT",
             "Connection": "close"
         },
-        "body": "{\"token\":\"USYS0E1149A85417F4F62C90881701027042_idses-int02.a.fsglobal.net\",\"token_type\":\"family_search\",\"access_token\":\"USYS0E1149A85417F4F62C90881701027042_idses-int02.a.fsglobal.net\"}"
+        "body": "{\"access_token\":\"USYSE288BB69C35C579AD8028B512F645ACB_idses-int02.a.fsglobal.net\",\"token_type\":\"family_search\",\"token\":\"USYSE288BB69C35C579AD8028B512F645ACB_idses-int02.a.fsglobal.net\"}"
     }
 }]

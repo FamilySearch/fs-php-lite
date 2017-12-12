@@ -571,11 +571,11 @@ class FamilySearch
     {
         switch ($this->environment) {
             case 'production':
-                return 'https://familysearch.org';
+                return 'https://api.familysearch.org';
             case 'beta':
                 return 'https://beta.familysearch.org';
             default:
-                return 'https://integration.familysearch.org';
+                return 'https://api-integ.familysearch.org';
         }
     }
     

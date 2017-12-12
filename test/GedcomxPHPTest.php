@@ -90,8 +90,8 @@ class GedcomxPHPTest extends ApiTestCase
         $this->assertResponseOK($this->login());
         $response = $this->client->get('/platform/tree/current-person');
         $this->assertTrue($response->redirected);
-        $this->assertEquals('https://integration.familysearch.org/platform/tree/current-person', $response->originalUrl);
-        $this->assertEquals('https://integration.familysearch.org/platform/tree/persons/KW7G-28J', $response->effectiveUrl);
+        $this->assertEquals('https://api-integ.familysearch.org/platform/tree/current-person', $response->originalUrl);
+        $this->assertEquals('https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J', $response->effectiveUrl);
         $this->assertHasGedcomxObject($response);
     }
     

@@ -4,7 +4,8 @@
         "url": "https:\/\/integration.familysearch.org\/cis-web\/oauth2\/v3\/token",
         "headers": {
             "Host": "integration.familysearch.org",
-            "Content-Type": "application\/x-www-form-urlencoded"
+            "Content-Type": "application\/x-www-form-urlencoded",
+            "User-Agent": "FS-PHP-Lite\/1.2.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17"
         },
         "body": "grant_type=password&client_id=a02j000000CBv4gAAD&username=sdktester&password=1234sdkpass"
     },
@@ -17,25 +18,26 @@
         "headers": {
             "Server": "Apache-Coyote\/1.1",
             "Expires": "Tue, 03 Jul 2001 06:00:00 GMT",
-            "Last-Modified": "Mon Oct 31 18:26:43 GMT+00:00 2016",
+            "Last-Modified": "Tue Dec 12 16:05:57 GMT 2017",
             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0",
             "Pragma": "no-cache",
             "Content-Type": "application\/json;charset=ISO-8859-1",
             "Content-Language": "en-US",
             "Content-Length": "185",
-            "Date": "Mon, 31 Oct 2016 18:26:43 GMT",
+            "Date": "Tue, 12 Dec 2017 16:05:57 GMT",
             "Connection": "close"
         },
-        "body": "{\"token\":\"USYS4F60C1CB790B03897C4E91B38E56605D_idses-int01.a.fsglobal.net\",\"token_type\":\"family_search\",\"access_token\":\"USYS4F60C1CB790B03897C4E91B38E56605D_idses-int01.a.fsglobal.net\"}"
+        "body": "{\"access_token\":\"USYS8109D8D7474B8D825EC31F342C0E7A69_idses-int01.a.fsglobal.net\",\"token_type\":\"family_search\",\"token\":\"USYS8109D8D7474B8D825EC31F342C0E7A69_idses-int01.a.fsglobal.net\"}"
     }
 },{
     "request": {
         "method": "POST",
-        "url": "https:\/\/integration.familysearch.org\/platform\/tree\/persons",
+        "url": "https:\/\/api-integ.familysearch.org\/platform\/tree\/persons",
         "headers": {
-            "Host": "integration.familysearch.org",
-            "Authorization": "Bearer USYS4F60C1CB790B03897C4E91B38E56605D_idses-int01.a.fsglobal.net",
+            "Host": "api-integ.familysearch.org",
+            "Authorization": "Bearer USYS8109D8D7474B8D825EC31F342C0E7A69_idses-int01.a.fsglobal.net",
             "Accept": "application\/x-fs-v1+json",
+            "User-Agent": "FS-PHP-Lite\/1.2.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17",
             "Content-Type": "application\/x-fs-v1+json"
         },
         "body": "{\"persons\":[{\"sources\":[{\"id\":\"34077598-142f-4784-b1e7-329e2b5a0625\",\"links\":{\"description\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/sources\\\/descriptions\\\/MMZJ-GMV\"},\"source-reference\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/source-references\\\/34077598-142f-4784-b1e7-329e2b5a0625\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMDZ-8G7\",\"resourceId\":\"MMDZ-8G7\"},\"modified\":1470770475882},\"description\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/sources\\\/descriptions\\\/MMZJ-GMV\"},{\"id\":\"c290dcce-f7eb-447b-8122-c03ae16f9b96\",\"links\":{\"description\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/sources\\\/descriptions\\\/MMZJ-GMN\"},\"source-reference\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/source-references\\\/c290dcce-f7eb-447b-8122-c03ae16f9b96\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMDZ-8G7\",\"resourceId\":\"MMDZ-8G7\"},\"modified\":1470770441164},\"description\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/sources\\\/descriptions\\\/MMZJ-GMN\"}],\"sortKey\":\"0000000000\",\"identifiers\":{\"http:\\\/\\\/gedcomx.org\\\/Persistent\":[\"https:\\\/\\\/sandbox.familysearch.org\\\/ark:\\\/61903\\\/4:1:L5C2-WYC\"]},\"living\":false,\"gender\":{\"id\":\"8b165ed0-5377-4c55-b4c5-1d6407166e3f\",\"links\":{\"conclusion\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/conclusions\\\/8b165ed0-5377-4c55-b4c5-1d6407166e3f\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMFW-HTT\",\"resourceId\":\"MMFW-HTT\"},\"modified\":1467250315751},\"type\":\"http:\\\/\\\/gedcomx.org\\\/Male\"},\"names\":[{\"id\":\"54910b54-274d-461c-adda-7190479bc4c7\",\"links\":{\"conclusion\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/conclusions\\\/54910b54-274d-461c-adda-7190479bc4c7\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMFW-HTT\",\"resourceId\":\"MMFW-HTT\"},\"modified\":1467250315751},\"type\":\"http:\\\/\\\/gedcomx.org\\\/BirthName\",\"nameForms\":[{\"fullText\":\"Ebenezer Clark\",\"parts\":[{\"type\":\"http:\\\/\\\/gedcomx.org\\\/Given\",\"value\":\"Ebenezer\"},{\"type\":\"http:\\\/\\\/gedcomx.org\\\/Surname\",\"value\":\"Clark\"}]}],\"preferred\":true}],\"facts\":[{\"id\":\"99519cb9-a8bf-4914-9f11-ccf93492b48b\",\"links\":{\"conclusion\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/conclusions\\\/99519cb9-a8bf-4914-9f11-ccf93492b48b\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMFW-HTT\",\"resourceId\":\"MMFW-HTT\"},\"modified\":1467250315751},\"type\":\"http:\\\/\\\/gedcomx.org\\\/Birth\",\"date\":{\"original\":\"29 Nov 1651\",\"formal\":\"+1651-11-29\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"29 November 1651\"},{\"value\":\"29 November 1651\"}]},\"place\":{\"original\":\"NEW HAVEN,NEW HAVEN,CONN\",\"description\":\"#1740247784\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"New Haven, New Haven, Connecticut, United States\"},{\"value\":\"New Haven, New Haven, Connecticut, United States\"},{\"value\":\"New Haven, New Haven, Connecticut, United States\"}]}},{\"id\":\"8e9dd699-4cea-4d30-8ff2-d5d11b171937\",\"links\":{\"conclusion\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/conclusions\\\/8e9dd699-4cea-4d30-8ff2-d5d11b171937\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMFW-HTT\",\"resourceId\":\"MMFW-HTT\"},\"modified\":1467250315751},\"type\":\"http:\\\/\\\/gedcomx.org\\\/Death\",\"date\":{\"original\":\"1721\",\"formal\":\"+1721\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"1721\"},{\"value\":\"1721\"}]},\"place\":{\"original\":\"WALLINGFORD,NEW HAVEN CONN.\",\"description\":\"#1243627151\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"Wallingford, New Haven, Connecticut, United States\"},{\"value\":\"Wallingford, New Haven, Connecticut, United States\"},{\"value\":\"Wallingford, New Haven, Connecticut, United States\"}]}},{\"id\":\"80c2512c-d2bc-422c-a0b8-66fb4621c2f7\",\"links\":{\"conclusion\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/conclusions\\\/80c2512c-d2bc-422c-a0b8-66fb4621c2f7\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMFW-HTT\",\"resourceId\":\"MMFW-HTT\"},\"modified\":1467250315751},\"type\":\"http:\\\/\\\/gedcomx.org\\\/Burial\",\"date\":{\"original\":\"1721\",\"formal\":\"+1721\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"1721\"},{\"value\":\"1721\"}]},\"place\":{\"original\":\"WALLINGFORD,NEW HAVEN CONN.\",\"description\":\"#1243627151\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"Wallingford, New Haven, Connecticut, United States\"},{\"value\":\"Wallingford, New Haven, Connecticut, United States\"},{\"value\":\"Wallingford, New Haven, Connecticut, United States\"}]}},{\"id\":\"c36105fd-4502-4a35-867c-308623e24299\",\"links\":{\"conclusion\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/tree\\\/persons\\\/L5C2-WYC\\\/conclusions\\\/c36105fd-4502-4a35-867c-308623e24299\"}},\"attribution\":{\"contributor\":{\"resource\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/users\\\/agents\\\/MMFW-HTT\",\"resourceId\":\"MMFW-HTT\"},\"modified\":1467250315751},\"type\":\"http:\\\/\\\/gedcomx.org\\\/Christening\",\"date\":{\"original\":\"29 Nov 1651\",\"formal\":\"+1651-11-29\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"29 November 1651\"},{\"value\":\"29 November 1651\"}]},\"place\":{\"original\":\"NEW HAVEN,NEW HAVEN,CONN\",\"description\":\"#1740247784\",\"normalized\":[{\"lang\":\"en-US\",\"value\":\"New Haven, New Haven, Connecticut, United States\"},{\"value\":\"New Haven, New Haven, Connecticut, United States\"},{\"value\":\"New Haven, New Haven, Connecticut, United States\"}]}}]}],\"sourceDescriptions\":[{\"id\":\"SD-L5C2-WYC\",\"links\":{\"description\":{\"href\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/sources\\\/descriptions\\\/SD-L5C2-WYC\"}},\"citations\":[{\"lang\":\"en\",\"value\":\"\\\"Family Tree,\\\" database, <i>FamilySearch<\\\/i> (http:\\\/\\\/familysearch.org : modified 09 August 2016, 19:21), entry for Ebenezer Clark(PID https:\\\/\\\/sandbox.familysearch.org\\\/ark:\\\/61903\\\/4:1:L5C2-WYC); contributed by various users.\"}],\"about\":\"#L5C2-WYC\",\"componentOf\":{\"description\":\"https:\\\/\\\/sandbox.familysearch.org\\\/platform\\\/collections\\\/tree\"},\"titles\":[{\"value\":\"Ebenezer Clark\"}],\"resourceType\":\"http:\\\/\\\/gedcomx.org\\\/Person\",\"identifiers\":{\"http:\\\/\\\/gedcomx.org\\\/Persistent\":[\"https:\\\/\\\/sandbox.familysearch.org\\\/ark:\\\/61903\\\/4:1:L5C2-WYC\"]},\"modified\":1470770475000,\"version\":\"136900632758820000\"}]}"
@@ -49,29 +51,30 @@
         "headers": {
             "Cache-Control": "no-cache, no-store, no-transform, must-revalidate, max-age=0",
             "Content-Type": "application\/x-fs-v1+json",
-            "Date": "Mon, 31 Oct 2016 18:25:49 GMT",
-            "Link": "<https:\/\/integration.familysearch.org\/platform\/tree\/ancestry?person=L58X-4X3>; rel=\"ancestry\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3\/child-relationships>; rel=\"child-relationships\", <https:\/\/integration.familysearch.org\/platform\/tree\/descendancy?person=L58X-4X3>; rel=\"descendancy\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3\/discussion-references>; rel=\"discussion-references\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3\/matches>; rel=\"matches\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3\/notes>; rel=\"notes\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3\/parent-relationships>; rel=\"parent-relationships\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons-with-relationships?person=L58X-4X3>; rel=\"person-with-relationships\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons>; rel=\"persons\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3\/source-references>; rel=\"source-references\", <https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3\/spouse-relationships>; rel=\"spouse-relationships\"",
-            "Location": "https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3",
+            "Date": "Tue, 12 Dec 2017 16:05:57 GMT",
+            "Link": "<https:\/\/api-integ.familysearch.org\/platform\/tree\/ancestry?person=L5F4-S12>; rel=\"ancestry\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12\/child-relationships>; rel=\"child-relationships\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/descendancy?person=L5F4-S12>; rel=\"descendancy\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12\/discussion-references>; rel=\"discussion-references\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12\/matches>; rel=\"matches\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12\/notes>; rel=\"notes\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12\/parent-relationships>; rel=\"parent-relationships\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons>; rel=\"persons\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12\/source-references>; rel=\"source-references\", <https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12\/spouse-relationships>; rel=\"spouse-relationships\"",
+            "Location": "https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12",
             "Server": "Apache-Coyote\/1.1",
             "Vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "Warning": "400 FamilySearch \"A locale was specified for normalized date 29 November 1651 but it will be ignored.\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\", 400 FamilySearch \"A locale was specified for normalized date 1721 but it will be ignored.\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\", 400 FamilySearch \"A locale was specified for normalized date 1721 but it will be ignored.\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\", 400 FamilySearch \"A locale was specified for normalized date 29 November 1651 but it will be ignored.\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\"",
-            "X-ENTITY-ID": "L58X-4X3",
-            "X-PROCESSING-TIME": "399",
-            "X-THROTTLE-MILLIS-LEFT": "1797215",
-            "X-THROTTLE-MILLIS-USED": "2785",
-            "X-THROTTLE-WINDOW-SIZE": "1800000",
+            "Warning": "400 FamilySearch \"Unable to read place reference #1740247784 (null).\", 400 FamilySearch \"Unable to read place reference #1243627151 (null).\", 400 FamilySearch \"Unable to read place reference #1243627151 (null).\", 400 FamilySearch \"Unable to read place reference #1740247784 (null).\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\", 400 FamilySearch \"Multiple normalized date values were provided. Only the first will be accepted.\"",
+            "X-ENTITY-ID": "L5F4-S12",
+            "X-PROCESSING-TIME": "394",
+            "X-THROTTLE-MILLIS-LEFT": "57423",
+            "X-THROTTLE-MILLIS-USED": "2577",
+            "X-THROTTLE-WINDOW-SIZE": "60000",
             "Content-Length": "0",
-            "Connection": "Close"
+            "Connection": "keep-alive"
         }
     }
 },{
     "request": {
         "method": "GET",
-        "url": "https:\/\/integration.familysearch.org\/platform\/tree\/persons\/L58X-4X3",
+        "url": "https:\/\/api-integ.familysearch.org\/platform\/tree\/persons\/L5F4-S12",
         "headers": {
-            "Host": "integration.familysearch.org",
-            "Authorization": "Bearer USYS4F60C1CB790B03897C4E91B38E56605D_idses-int01.a.fsglobal.net",
-            "Accept": "application\/x-fs-v1+json"
+            "Host": "api-integ.familysearch.org",
+            "Authorization": "Bearer USYS8109D8D7474B8D825EC31F342C0E7A69_idses-int01.a.fsglobal.net",
+            "Accept": "application\/x-fs-v1+json",
+            "User-Agent": "FS-PHP-Lite\/1.2.0 curl\/7.35.0 PHP\/5.5.9-1ubuntu4.17"
         }
     },
     "response": {
@@ -83,19 +86,16 @@
         "headers": {
             "Allow": "OPTIONS, HEAD, GET, POST, DELETE",
             "Cache-Control": "no-transform, must-revalidate, max-age=0",
-            "Content-Location": "\/tree\/persons\/L58X-4X3",
+            "Content-Location": "\/tree\/persons\/L5F4-S12",
             "Content-Type": "application\/x-fs-v1+json",
-            "Date": "Mon, 31 Oct 2016 18:25:49 GMT",
-            "ETag": "\"136972311497060000\"",
-            "Last-Modified": "Mon, 31 Oct 2016 18:25:49 GMT",
+            "Date": "Tue, 12 Dec 2017 16:05:58 GMT",
+            "ETag": "\"137323875577660000\"",
+            "Last-Modified": "Tue, 12 Dec 2017 16:05:57 GMT",
             "Server": "Apache-Coyote\/1.1",
             "Vary": "Accept, Accept-Language, Accept-Encoding, Expect, Accept-Encoding",
-            "X-PROCESSING-TIME": "150",
-            "X-THROTTLE-MILLIS-LEFT": "1797068",
-            "X-THROTTLE-MILLIS-USED": "2932",
-            "X-THROTTLE-WINDOW-SIZE": "1800000",
+            "X-PROCESSING-TIME": "169",
             "transfer-encoding": "chunked",
-            "Connection": "Close"
+            "Connection": "keep-alive"
         }
     }
 }]
