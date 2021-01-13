@@ -194,7 +194,7 @@ class FamilySearch
                 'password' => $password
             ],
             'headers' => [
-                'Content-Type' => 'application/x-www-form-urlencoded'    
+                'content-type' => 'application/x-www-form-urlencoded'
             ]
         ]);
         
@@ -354,13 +354,13 @@ class FamilySearch
             
             // PHP array
             if (is_array($options['body']) && strpos($requestUrl, '/platform/') !== false) {
-               $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
+               $options['headers']['content-type'] = 'application/x-fs-v1+json';
                $body = json_encode($options['body']);
             } 
             
             // gedcomx-php object
             else if ($this->objects && is_object($options['body']) && method_exists($options['body'], 'toArray')) {
-                $options['headers']['Content-Type'] = 'application/x-fs-v1+json';
+                $options['headers']['content-type'] = 'application/x-fs-v1+json';
                 $body = json_encode($options['body']->toArray());
             } 
             
@@ -403,39 +403,33 @@ class FamilySearch
             $response->effectiveUrl = $requestUrl;
             $response->redirected = false;
             $response->throttled = false;
-            
-            // Headers regex
-            $pattern = '#HTTP/\d\.\d.*?$.*?\r\n\r\n#ims';
-            
+
             // Extract headers from response
-            preg_match_all($pattern, $curlResponse, $matches);
-            $headers_string = array_pop($matches[0]);
-            $responseHeaders = explode("\r\n", str_replace("\r\n\r\n", '', $headers_string));
-            
-            // Remove headers from the response body
-            $response->body = str_replace($headers_string, '', $curlResponse);
-            
-            // Extract the version and status from the first header
-            $version_and_status = array_shift($responseHeaders);
-            preg_match('#HTTP/(\d\.\d)\s(\d\d\d)\s(.*)#', $version_and_status, $matches);
-            $response->statusCode = intval($matches[2]);
-            $response->statusText = $matches[3];
-            $response->status = $matches[2].' '.$matches[3];
-            
+            $responseParts = explode("\r\n\r\n", $curlResponse);
+            $responseHeaders = explode("\r\n", $responseParts[0]);
+
+            // Set response body;
+            $response->body = $responseParts[1];
+
             // Convert headers into an associative array
             foreach ($responseHeaders as $header) {
                 preg_match('#(.*?)\:\s(.*)#', $header, $matches);
-                $response->headers[$matches[1]] = $matches[2];
+                if (count($matches)) {
+                    $response->headers[$matches[1]] = $matches[2];
+                }
             }
-            
+
+            // Get status code
+            $response->statusCode = $http_code = curl_getinfo($request, CURLINFO_HTTP_CODE);
+
             // Follow redirects. We don't use the curl opt to do this because it
             // appends all response headers into the final response which makes
             // parsing practically impossible. So we just recursively follow
             // redirects ourself.
-            if ($response->statusCode >= 300 && $response->statusCode < 400 && $response->headers['Location']) {
+            if ($response->statusCode >= 300 && $response->statusCode < 400 && $response->headers['location']) {
                 
                 // We don't include the body param because POSTs should never redirect
-                $redirectResponse = $this->request($response->headers['Location'], $options);
+                $redirectResponse = $this->request($response->headers['location'], $options);
                 $redirectResponse->redirected = true;
                 $redirectResponse->originalUrl = $requestUrl;
                 return $redirectResponse;
@@ -443,8 +437,8 @@ class FamilySearch
             
             // Throttling
             if ($response->statusCode === 429 && ++$options['_retries'] < $this->maxThrottledRetries) {
-                if ($response->headers['Retry-After']) {
-                    sleep(intval($response->headers['Retry-After']));
+                if ($response->headers['retry-after']) {
+                    sleep(intval($response->headers['retry-after']));
                 }
                 $throttledResponse = $this->request($url, $options);
                 $throttledResponse->throttled = true;
@@ -455,7 +449,7 @@ class FamilySearch
             }
             
             // Process JSON, if possible
-            if (isset($response->headers['Content-Type']) && strpos($response->headers['Content-Type'], 'json') !== false) {
+            if (isset($response->headers['content-type']) && strpos($response->headers['content-type'], 'json') !== false) {
                 try {
                     $response->data = json_decode($response->body, true);
                     
