@@ -218,23 +218,72 @@ See `tests/bootstrap.php` for VCR configuration:
 - Ensure Xdebug is enabled: `php -v` should show "with Xdebug"
 - Run with: `XDEBUG_MODE=coverage composer test:coverage`
 
-## Testing Against Live API
+## Credentials for Integration Tests
 
-To test against live FamilySearch API (not recommended for regular testing):
+### Default: VCR Cassettes (No Credentials Needed)
 
-1. Disable VCR in integration test:
-```php
-public function testLiveApi(): void
-{
-    // VCR disabled - makes real HTTP request
-    $response = $this->client->get('/platform/users/current');
-    $this->assertResponseOK($response);
-}
+Integration tests use pre-recorded VCR cassettes by default. No credentials are required for normal testing:
+
+```bash
+composer test:integration  # Uses recorded API responses
 ```
 
-2. Ensure valid credentials in `SandboxCredentials.php`
+### Optional: Testing Against Live API
 
-**Note**: Live API testing requires valid sandbox credentials and can be affected by rate limiting.
+To test against the live FamilySearch sandbox API, you need credentials obtained through the [FamilySearch Developer Program](https://www.familysearch.org/developers/).
+
+**Important**: Credentials are NOT stored in this repository and must be provided externally.
+
+#### Option 1: Environment Variables (Recommended)
+
+Set environment variables before running tests:
+
+```bash
+export FAMILYSEARCH_USERNAME="your-username"
+export FAMILYSEARCH_PASSWORD="your-password"
+export FAMILYSEARCH_API_KEY="your-api-key"
+export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # optional
+
+composer test:integration
+```
+
+#### Option 2: Local Configuration File
+
+Copy the example file and fill in your credentials:
+
+```bash
+cp tests/Integration/SandboxCredentials.example.php tests/Integration/SandboxCredentials.php
+# Edit SandboxCredentials.php with your credentials
+```
+
+**Note**: `SandboxCredentials.php` is git-ignored and will never be committed.
+
+### CI/CD Behavior
+
+GitHub Actions CI runs integration tests using **only** pre-recorded VCR cassettes. No live credentials are used in CI to ensure:
+- Tests are fast and deterministic
+- No risk of rate limiting
+- No secrets management required
+- Tests work even if the sandbox API is unavailable
+
+### Re-recording Cassettes
+
+To update cassettes with fresh API responses (requires credentials):
+
+```bash
+# Set credentials via environment variables
+export FAMILYSEARCH_USERNAME="your-username"
+export FAMILYSEARCH_PASSWORD="your-password"
+export FAMILYSEARCH_API_KEY="your-api-key"
+
+# Delete old cassettes
+rm tests/fixtures/*.json
+
+# Re-run tests to record new responses
+composer test:integration
+```
+
+**Note**: Live API testing can be affected by rate limiting and requires valid sandbox credentials.
 
 ## Best Practices
 
@@ -242,8 +291,9 @@ public function testLiveApi(): void
 2. **Use descriptive test names** - `testGetPersonReturnsValidResponse` not `testGet`
 3. **One assertion per test** - Makes failures easier to diagnose
 4. **Keep cassettes up to date** - Re-record when API changes
-5. **Don't commit credentials** - Use environment variables for sensitive data
+5. **Never commit credentials** - Always use environment variables or git-ignored files. Credentials are NOT stored in this repository.
 6. **Test edge cases** - Error conditions, empty responses, malformed data
+7. **Use VCR cassettes in CI** - Integration tests should run on recorded responses, not live API calls
 
 ## PHP Version Testing
 

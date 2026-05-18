@@ -11,12 +11,49 @@ abstract class ApiTestCase extends TestCase
     private static ?array $personData = null;
 
     /**
+     * Get credentials from environment or SandboxCredentials class
+     */
+    protected function getCredentials(): array
+    {
+        // Try environment variables first (recommended)
+        $username = getenv('FAMILYSEARCH_USERNAME');
+        $password = getenv('FAMILYSEARCH_PASSWORD');
+        $apiKey = getenv('FAMILYSEARCH_API_KEY');
+        $redirectUri = getenv('FAMILYSEARCH_REDIRECT_URI');
+
+        // Fall back to SandboxCredentials if it exists and has values
+        if (empty($apiKey) && class_exists('FamilySearch\Tests\Integration\SandboxCredentials')) {
+            $username = $username ?: SandboxCredentials::USERNAME;
+            $password = $password ?: SandboxCredentials::PASSWORD;
+            $apiKey = $apiKey ?: SandboxCredentials::API_KEY;
+            $redirectUri = $redirectUri ?: SandboxCredentials::REDIRECT_URI;
+        }
+
+        return [
+            'username' => $username ?: '',
+            'password' => $password ?: '',
+            'api_key' => $apiKey ?: '',
+            'redirect_uri' => $redirectUri ?: 'http://example.com/redirect',
+        ];
+    }
+
+    /**
+     * Check if credentials are available for testing
+     */
+    protected function hasCredentials(): bool
+    {
+        $creds = $this->getCredentials();
+        return !empty($creds['api_key']) && !empty($creds['username']) && !empty($creds['password']);
+    }
+
+    /**
      * Automatically called by PHPUnit before each test is run
      */
     protected function setUp(): void
     {
+        $creds = $this->getCredentials();
         $this->client = new FamilySearch([
-            'appKey' => SandboxCredentials::API_KEY
+            'appKey' => $creds['api_key']
         ]);
     }
 
@@ -25,9 +62,10 @@ abstract class ApiTestCase extends TestCase
      */
     protected function login(): object
     {
+        $creds = $this->getCredentials();
         return $this->client->oauthPassword(
-            SandboxCredentials::USERNAME,
-            SandboxCredentials::PASSWORD
+            $creds['username'],
+            $creds['password']
         );
     }
 

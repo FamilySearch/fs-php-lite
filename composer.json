@@ -1,5 +1,8 @@
 {
     "name": "familysearch/fs-php-lite",
+    "description": "A lightweight PHP SDK for the FamilySearch API",
+    "type": "library",
+    "keywords": ["familysearch", "genealogy", "api", "sdk"],
     "authors": [
         {
             "name": "Justin",
@@ -19,9 +22,7 @@
         "php-vcr/phpunit-testlistener-vcr": "^3.0"
     },
     "autoload": {
-        "psr-4": {
-            "": "src/"
-        }
+        "classmap": ["src/"]
     },
     "autoload-dev": {
         "psr-4": {

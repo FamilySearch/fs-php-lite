@@ -426,10 +426,11 @@ class FamilySearch
             // appends all response headers into the final response which makes
             // parsing practically impossible. So we just recursively follow
             // redirects ourself.
-            if ($response->statusCode >= 300 && $response->statusCode < 400 && $response->headers['location']) {
-                
+            $locationHeader = $response->headers['Location'] ?? $response->headers['location'] ?? null;
+            if ($response->statusCode >= 300 && $response->statusCode < 400 && $locationHeader) {
+
                 // We don't include the body param because POSTs should never redirect
-                $redirectResponse = $this->request($response->headers['location'], $options);
+                $redirectResponse = $this->request($locationHeader, $options);
                 $redirectResponse->redirected = true;
                 $redirectResponse->originalUrl = $requestUrl;
                 return $redirectResponse;
