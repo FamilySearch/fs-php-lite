@@ -145,3 +145,59 @@ object.
 
 gedcomx-php must be installed and included separately. gedcomx-php version 3.1.2
 or later is required.
+
+## Testing
+
+The SDK includes comprehensive unit and integration tests.
+
+### Running Tests
+
+```bash
+# Install dependencies
+composer install
+
+# Run all tests
+composer test
+
+# Run only unit tests
+composer test:unit
+
+# Run only integration tests
+composer test:integration
+
+# Generate code coverage report
+composer test:coverage
+```
+
+### Test Structure
+
+- **Unit Tests** - Fast tests that don't make HTTP requests
+- **Integration Tests** - Tests using recorded API responses via php-vcr
+- **Examples** - Working demo applications in `/examples` directory
+
+See [TESTING.md](TESTING.md) for detailed testing documentation.
+
+## Requirements
+
+- PHP 8.1 or higher
+- ext-curl
+- ext-json
+
+## Development
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for your changes
+4. Ensure all tests pass: `composer test`
+5. Submit a pull request
+
+### CI/CD
+
+Tests run automatically via GitHub Actions on:
+- PHP 8.1, 8.2, and 8.3
+- Every push and pull request
+- Code coverage reports generated for PHP 8.3
+
+See [.github/workflows/tests.yml](.github/workflows/tests.yml) for CI configuration.

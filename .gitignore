@@ -1,1 +1,6 @@
 vendor
+composer.lock
+.phpunit.cache
+coverage
+coverage.xml
+.phpunit.result.cache

@@ -1,0 +1,263 @@
+{
+  "persons" : [ {
+    "sources" : [ {
+      "id" : "34077598-142f-4784-b1e7-329e2b5a0625",
+      "links" : {
+        "description" : {
+          "href" : "https://sandbox.familysearch.org/platform/sources/descriptions/MMZJ-GMV"
+        },
+        "source-reference" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/source-references/34077598-142f-4784-b1e7-329e2b5a0625"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMDZ-8G7",
+          "resourceId" : "MMDZ-8G7"
+        },
+        "modified" : 1470770475882
+      },
+      "description" : "https://sandbox.familysearch.org/platform/sources/descriptions/MMZJ-GMV"
+    }, {
+      "id" : "c290dcce-f7eb-447b-8122-c03ae16f9b96",
+      "links" : {
+        "description" : {
+          "href" : "https://sandbox.familysearch.org/platform/sources/descriptions/MMZJ-GMN"
+        },
+        "source-reference" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/source-references/c290dcce-f7eb-447b-8122-c03ae16f9b96"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMDZ-8G7",
+          "resourceId" : "MMDZ-8G7"
+        },
+        "modified" : 1470770441164
+      },
+      "description" : "https://sandbox.familysearch.org/platform/sources/descriptions/MMZJ-GMN"
+    } ],
+    "sortKey" : "0000000000",
+    "identifiers" : {
+      "http://gedcomx.org/Persistent" : [ "https://sandbox.familysearch.org/ark:/61903/4:1:L5C2-WYC" ]
+    },
+    "living" : false,
+    "gender" : {
+      "id" : "8b165ed0-5377-4c55-b4c5-1d6407166e3f",
+      "links" : {
+        "conclusion" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/conclusions/8b165ed0-5377-4c55-b4c5-1d6407166e3f"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMFW-HTT",
+          "resourceId" : "MMFW-HTT"
+        },
+        "modified" : 1467250315751
+      },
+      "type" : "http://gedcomx.org/Male"
+    },
+    "names" : [ {
+      "id" : "54910b54-274d-461c-adda-7190479bc4c7",
+      "links" : {
+        "conclusion" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/conclusions/54910b54-274d-461c-adda-7190479bc4c7"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMFW-HTT",
+          "resourceId" : "MMFW-HTT"
+        },
+        "modified" : 1467250315751
+      },
+      "type" : "http://gedcomx.org/BirthName",
+      "nameForms" : [ {
+        "fullText" : "Ebenezer Clark",
+        "parts" : [ {
+          "type" : "http://gedcomx.org/Given",
+          "value" : "Ebenezer"
+        }, {
+          "type" : "http://gedcomx.org/Surname",
+          "value" : "Clark"
+        } ]
+      } ],
+      "preferred" : true
+    } ],
+    "facts" : [ {
+      "id" : "99519cb9-a8bf-4914-9f11-ccf93492b48b",
+      "links" : {
+        "conclusion" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/conclusions/99519cb9-a8bf-4914-9f11-ccf93492b48b"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMFW-HTT",
+          "resourceId" : "MMFW-HTT"
+        },
+        "modified" : 1467250315751
+      },
+      "type" : "http://gedcomx.org/Birth",
+      "date" : {
+        "original" : "29 Nov 1651",
+        "formal" : "+1651-11-29",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "29 November 1651"
+        }, {
+          "value" : "29 November 1651"
+        } ]
+      },
+      "place" : {
+        "original" : "NEW HAVEN,NEW HAVEN,CONN",
+        "description" : "#1740247784",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "New Haven, New Haven, Connecticut, United States"
+        }, {
+          "value" : "New Haven, New Haven, Connecticut, United States"
+        }, {
+          "value" : "New Haven, New Haven, Connecticut, United States"
+        } ]
+      }
+    }, {
+      "id" : "8e9dd699-4cea-4d30-8ff2-d5d11b171937",
+      "links" : {
+        "conclusion" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/conclusions/8e9dd699-4cea-4d30-8ff2-d5d11b171937"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMFW-HTT",
+          "resourceId" : "MMFW-HTT"
+        },
+        "modified" : 1467250315751
+      },
+      "type" : "http://gedcomx.org/Death",
+      "date" : {
+        "original" : "1721",
+        "formal" : "+1721",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "1721"
+        }, {
+          "value" : "1721"
+        } ]
+      },
+      "place" : {
+        "original" : "WALLINGFORD,NEW HAVEN CONN.",
+        "description" : "#1243627151",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "Wallingford, New Haven, Connecticut, United States"
+        }, {
+          "value" : "Wallingford, New Haven, Connecticut, United States"
+        }, {
+          "value" : "Wallingford, New Haven, Connecticut, United States"
+        } ]
+      }
+    }, {
+      "id" : "80c2512c-d2bc-422c-a0b8-66fb4621c2f7",
+      "links" : {
+        "conclusion" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/conclusions/80c2512c-d2bc-422c-a0b8-66fb4621c2f7"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMFW-HTT",
+          "resourceId" : "MMFW-HTT"
+        },
+        "modified" : 1467250315751
+      },
+      "type" : "http://gedcomx.org/Burial",
+      "date" : {
+        "original" : "1721",
+        "formal" : "+1721",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "1721"
+        }, {
+          "value" : "1721"
+        } ]
+      },
+      "place" : {
+        "original" : "WALLINGFORD,NEW HAVEN CONN.",
+        "description" : "#1243627151",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "Wallingford, New Haven, Connecticut, United States"
+        }, {
+          "value" : "Wallingford, New Haven, Connecticut, United States"
+        }, {
+          "value" : "Wallingford, New Haven, Connecticut, United States"
+        } ]
+      }
+    }, {
+      "id" : "c36105fd-4502-4a35-867c-308623e24299",
+      "links" : {
+        "conclusion" : {
+          "href" : "https://sandbox.familysearch.org/platform/tree/persons/L5C2-WYC/conclusions/c36105fd-4502-4a35-867c-308623e24299"
+        }
+      },
+      "attribution" : {
+        "contributor" : {
+          "resource" : "https://sandbox.familysearch.org/platform/users/agents/MMFW-HTT",
+          "resourceId" : "MMFW-HTT"
+        },
+        "modified" : 1467250315751
+      },
+      "type" : "http://gedcomx.org/Christening",
+      "date" : {
+        "original" : "29 Nov 1651",
+        "formal" : "+1651-11-29",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "29 November 1651"
+        }, {
+          "value" : "29 November 1651"
+        } ]
+      },
+      "place" : {
+        "original" : "NEW HAVEN,NEW HAVEN,CONN",
+        "description" : "#1740247784",
+        "normalized" : [ {
+          "lang" : "en-US",
+          "value" : "New Haven, New Haven, Connecticut, United States"
+        }, {
+          "value" : "New Haven, New Haven, Connecticut, United States"
+        }, {
+          "value" : "New Haven, New Haven, Connecticut, United States"
+        } ]
+      }
+    } ]
+   } ],
+  "sourceDescriptions" : [ {
+    "id" : "SD-L5C2-WYC",
+    "links" : {
+      "description" : {
+        "href" : "https://sandbox.familysearch.org/platform/sources/descriptions/SD-L5C2-WYC"
+      }
+    },
+    "citations" : [ {
+      "lang" : "en",
+      "value" : "\"Family Tree,\" database, <i>FamilySearch</i> (http://familysearch.org : modified 09 August 2016, 19:21), entry for Ebenezer Clark(PID https://sandbox.familysearch.org/ark:/61903/4:1:L5C2-WYC); contributed by various users."
+    } ],
+    "about" : "#L5C2-WYC",
+    "componentOf" : {
+      "description" : "https://sandbox.familysearch.org/platform/collections/tree"
+    },
+    "titles" : [ {
+      "value" : "Ebenezer Clark"
+    } ],
+    "resourceType" : "http://gedcomx.org/Person",
+    "identifiers" : {
+      "http://gedcomx.org/Persistent" : [ "https://sandbox.familysearch.org/ark:/61903/4:1:L5C2-WYC" ]
+    },
+    "modified" : 1470770475000,
+    "version" : "136900632758820000"
+  } ]
+}
