@@ -173,6 +173,17 @@ Located in `tests/fixtures/`, these JSON files contain:
 - Request details (method, URL, headers, body)
 - Response details (status, headers, body)
 
+### Known VCR Limitations
+
+**Header Extraction Issues**: VCR cassettes contain the full HTTP response headers (including `X-ENTITY-ID`), but when VCR replays responses, some headers may not be properly accessible to the SDK. This is a known limitation of how VCR intercepts curl_exec() calls. Tests that depend on response headers may fail when run with VCR cassettes but pass against the live API.
+
+**Redirect Handling**: The SDK manually follows HTTP redirects to work around curl_exec() limitations. VCR's interception interferes with this redirect handling, causing redirect tests to fail during playback. The `testRedirect` test is intentionally skipped for this reason, but redirect functionality is verified through `testPendingModification` and manual testing.
+
+**Workarounds**:
+- For development and CI, unit tests provide deterministic, fast validation without these issues
+- Integration tests with VCR validate request/response structure and JSON parsing
+- Manual testing against the live API (see below) validates full end-to-end behavior including headers and redirects
+
 ### Re-recording Cassettes
 
 To update cassettes with fresh API responses:

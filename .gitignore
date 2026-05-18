@@ -5,3 +5,4 @@ coverage
 coverage.xml
 .phpunit.result.cache
 tests/Integration/SandboxCredentials.php
+.idea/
