@@ -405,11 +405,16 @@ class FamilySearch
             $response->throttled = false;
 
             // Extract headers from response
+            // Handle multiple header sections (e.g., 100 Continue followed by 201 Created)
             $responseParts = explode("\r\n\r\n", $curlResponse);
-            $responseHeaders = explode("\r\n", $responseParts[0]);
 
-            // Set response body;
-            $response->body = $responseParts[1];
+            // The body is always the last part
+            $response->body = array_pop($responseParts);
+
+            // The actual response headers are in the last header section
+            // (skip informational responses like 100 Continue)
+            $lastHeaderSection = array_pop($responseParts);
+            $responseHeaders = explode("\r\n", $lastHeaderSection);
 
             // Convert headers into an associative array
             foreach ($responseHeaders as $header) {
@@ -426,10 +431,11 @@ class FamilySearch
             // appends all response headers into the final response which makes
             // parsing practically impossible. So we just recursively follow
             // redirects ourself.
-            if ($response->statusCode >= 300 && $response->statusCode < 400 && $response->headers['location']) {
-                
+            $locationHeader = $response->headers['Location'] ?? $response->headers['location'] ?? null;
+            if ($response->statusCode >= 300 && $response->statusCode < 400 && $locationHeader) {
+
                 // We don't include the body param because POSTs should never redirect
-                $redirectResponse = $this->request($response->headers['location'], $options);
+                $redirectResponse = $this->request($locationHeader, $options);
                 $redirectResponse->redirected = true;
                 $redirectResponse->originalUrl = $requestUrl;
                 return $redirectResponse;
