@@ -77,7 +77,8 @@ abstract class ApiTestCase extends TestCase
         $response = $this->client->post('/platform/tree/persons', [
             'body' => $this->personData()
         ]);
-        return $response->headers['X-ENTITY-ID'] ?? null;
+        // HTTP/2 lowercases headers, so check both uppercase and lowercase variants
+        return $response->headers['X-ENTITY-ID'] ?? $response->headers['x-entity-id'] ?? null;
     }
 
     /**

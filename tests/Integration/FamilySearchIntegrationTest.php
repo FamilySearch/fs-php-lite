@@ -91,7 +91,7 @@ class FamilySearchIntegrationTest extends ApiTestCase
         $response = $this->client->head('/platform/tree/persons/' . $personId);
         $this->assertResponseOK($response);
         $this->assertEmpty($response->body);
-        $this->assertEmpty($response->data);
+        $this->assertEmpty($response->data ?? null);
 
         VCR::eject();
         VCR::turnOff();
