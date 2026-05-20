@@ -6,7 +6,7 @@ include '../src/FamilySearch.php';
 
 $fs = new FamilySearch([
   'environment' => 'sandbox',
-  'appKey' => 'a02j000000CBv4gAAD',
+  'appKey' => 'YOUR_APP_KEY_HERE',  // Replace with your FamilySearch developer app key
   'redirectUri' => calculateBaseUrl() . '/examples/oauthResponse.php',
 ]);
 
