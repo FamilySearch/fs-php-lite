@@ -18,7 +18,7 @@ composer install
 2. Configure your API credentials in `_includes.php` or set environment variables:
 ```php
 $config = [
-    'environment' => 'integration',  // or 'beta', 'production'
+    'environment' => 'beta',  // or 'production'
     'appKey' => 'YOUR_APP_KEY',
     'redirectUri' => 'http://localhost:8080/examples/oauthResponse.php'
 ];
