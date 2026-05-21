@@ -107,6 +107,6 @@ php examples/readPerson.php
 
 ## Additional Resources
 
-- [FamilySearch API Documentation](https://www.familysearch.org/developers/docs/api/resources)
-- [OAuth 2.0 Guide](https://www.familysearch.org/developers/docs/guides/oauth2)
+- [FamilySearch API Documentation](https://developers.familysearch.org/main/docs/getting-started)
+- [OAuth 2.0 Guide](https://developers.familysearch.org/main/docs/authentication)
 - [FamilySearch GEDCOM X](https://github.com/FamilySearch/gedcomx)
