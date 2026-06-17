@@ -12,7 +12,7 @@ The SDK uses a multi-layered testing approach:
 
 ## Prerequisites
 
-- PHP 8.1, 8.2, or 8.3
+- PHP 7.4, 8.0, 8.1, 8.2, or 8.3
 - Composer
 - Xdebug (for code coverage)
 
@@ -151,7 +151,7 @@ open coverage/index.html
 Tests run automatically on every push and pull request via GitHub Actions.
 
 The CI pipeline:
-- Tests against PHP 8.1, 8.2, and 8.3
+- Tests against PHP 7.4, 8.0, 8.1, 8.2, and 8.3
 - Runs both unit and integration tests
 - Generates code coverage reports (PHP 8.3 only)
 - Uploads coverage to Codecov
@@ -310,18 +310,87 @@ composer test:integration
 
 ## PHP Version Testing
 
-To test against specific PHP versions locally using Docker:
+### Test All Supported PHP Versions Locally
+
+To verify compatibility across all supported PHP versions, use Docker with the script below.
+
+#### Quick Test (Single Version)
 
 ```bash
+# PHP 7.4
+docker run --rm -v $(pwd):/app -w /app php:7.4-cli sh -c "apt-get update -qq && apt-get install -y -qq git zip unzip > /dev/null && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > /dev/null && composer install -q && composer test"
+
+# PHP 8.0
+docker run --rm -v $(pwd):/app -w /app php:8.0-cli sh -c "apt-get update -qq && apt-get install -y -qq git zip unzip > /dev/null && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > /dev/null && composer install -q && composer test"
+
 # PHP 8.1
-docker run --rm -v $(pwd):/app -w /app php:8.1-cli composer test
+docker run --rm -v $(pwd):/app -w /app php:8.1-cli sh -c "apt-get update -qq && apt-get install -y -qq git zip unzip > /dev/null && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > /dev/null && composer install -q && composer test"
 
 # PHP 8.2
-docker run --rm -v $(pwd):/app -w /app php:8.2-cli composer test
+docker run --rm -v $(pwd):/app -w /app php:8.2-cli sh -c "apt-get update -qq && apt-get install -y -qq git zip unzip > /dev/null && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > /dev/null && composer install -q && composer test"
 
 # PHP 8.3
-docker run --rm -v $(pwd):/app -w /app php:8.3-cli composer test
+docker run --rm -v $(pwd):/app -w /app php:8.3-cli sh -c "apt-get update -qq && apt-get install -y -qq git zip unzip > /dev/null && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > /dev/null && composer install -q && composer test"
 ```
+
+#### Test All Versions at Once
+
+Copy-paste this complete script to test all PHP versions in sequence:
+
+```bash
+#!/bin/bash
+# Test all supported PHP versions
+
+set -e
+
+VERSIONS=("7.4" "8.0" "8.1" "8.2" "8.3")
+
+echo "Testing fs-php-lite across PHP versions..."
+echo "============================================"
+
+for VERSION in "${VERSIONS[@]}"; do
+    echo ""
+    echo "Testing PHP $VERSION..."
+    echo "------------------------"
+    
+    docker run --rm \
+        -v $(pwd):/app \
+        -w /app \
+        php:${VERSION}-cli \
+        sh -c "
+            apt-get update -qq && \
+            apt-get install -y -qq git zip unzip > /dev/null && \
+            curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > /dev/null && \
+            echo 'Installing dependencies...' && \
+            composer install -q && \
+            echo 'Running tests...' && \
+            composer test
+        "
+    
+    if [ $? -eq 0 ]; then
+        echo "✓ PHP $VERSION: PASSED"
+    else
+        echo "✗ PHP $VERSION: FAILED"
+        exit 1
+    fi
+done
+
+echo ""
+echo "============================================"
+echo "All PHP versions tested successfully!"
+```
+
+Save as `test-all-versions.sh`, make executable with `chmod +x test-all-versions.sh`, and run:
+
+```bash
+./test-all-versions.sh
+```
+
+### Expected Behavior
+
+- **PHP 7.4**: Installs PHPUnit 9.x and php-vcr 1.7.x
+- **PHP 8.0**: Installs PHPUnit 9.x or 10.x and php-vcr 1.7.x or 1.8.x
+- **PHP 8.1+**: Installs PHPUnit 10.x and php-vcr 1.8.x
 
 ## Contributing
 

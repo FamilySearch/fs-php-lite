@@ -17,8 +17,8 @@
     },
     "require-dev": {
         "gedcomx/gedcomx-php": "^3.1.2",
-        "php-vcr/php-vcr": "^1.6",
-        "phpunit/phpunit": "^10.5",
+        "php-vcr/php-vcr": "^1.7",
+        "phpunit/phpunit": "^9.5 || ^10.5",
         "php-vcr/phpunit-testlistener-vcr": "^3.0"
     },
     "autoload": {
