@@ -1,8 +1,8 @@
 # FamilySearch PHP Lite SDK
 
 [![Packagist](https://img.shields.io/packagist/v/familysearch/fs-php-lite.svg)](https://packagist.org/packages/familysearch/fs-php-lite)
-![Tests](https://github.com/PermanentOrg/fs-php-lite/workflows/Tests/badge.svg?branch=master)
-[![PHP Version](https://img.shields.io/badge/php-8.1%20%7C%208.2%20%7C%208.3-blue.svg)](https://github.com/PermanentOrg/fs-php-lite)
+![Tests](https://github.com/FamilySearch/fs-php-lite/workflows/Tests/badge.svg?branch=master)
+[![PHP Version](https://img.shields.io/badge/php-7.4%20%7C%208.0%20%7C%208.1%20%7C%208.2%20%7C%208.3-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
 
 Lite PHP SDK for the [FamilySearch API](https://familysearch.org/developers/).
 
@@ -180,7 +180,7 @@ See [TESTING.md](TESTING.md) for detailed testing documentation.
 
 ## Requirements
 
-- PHP 8.1 or higher
+- PHP 7.4 or higher
 - ext-curl
 - ext-json
 
@@ -197,7 +197,7 @@ See [TESTING.md](TESTING.md) for detailed testing documentation.
 ### CI/CD
 
 Tests run automatically via GitHub Actions on:
-- PHP 8.1, 8.2, and 8.3
+- PHP 7.4, 8.0, 8.1, 8.2, and 8.3
 - Every push and pull request
 - Code coverage reports generated for PHP 8.3
 
