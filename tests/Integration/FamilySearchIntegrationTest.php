@@ -2,8 +2,6 @@
 
 namespace FamilySearch\Tests\Integration;
 
-use VCR\VCR;
-
 /**
  * Integration tests using VCR for HTTP recording/replay
  */
@@ -14,17 +12,11 @@ class FamilySearchIntegrationTest extends ApiTestCase
      */
     public function testAuthenticate(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('testAuthenticate.json');
-
         $response = $this->login();
 
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
         $this->assertArrayHasKey('access_token', $response->data);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -32,9 +24,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
      */
     public function testPost(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('testPost.json');
-
         $this->assertResponseOK($this->login());
         $personId = $this->createPerson();
 
@@ -43,9 +32,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
             'createPerson() returned null - VCR cassette may not properly replay X-ENTITY-ID header'
         );
         $this->assertNotEmpty($personId);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -53,9 +39,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
      */
     public function testGet(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('testGet.json');
-
         $this->assertResponseOK($this->login());
         $personId = $this->createPerson();
 
@@ -67,9 +50,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
         $response = $this->client->get('/platform/tree/persons/' . $personId);
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -77,9 +57,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
      */
     public function testHead(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('testHead.json');
-
         $this->assertResponseOK($this->login());
         $personId = $this->createPerson();
 
@@ -92,9 +69,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
         $this->assertResponseOK($response);
         $this->assertEmpty($response->body);
         $this->assertEmpty($response->data ?? null);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -102,9 +76,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
      */
     public function testDelete(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('testDelete.json');
-
         $this->assertResponseOK($this->login());
         $personId = $this->createPerson();
 
@@ -118,9 +89,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
 
         $response = $this->client->get('/platform/tree/persons/' . $personId);
         $this->assertEquals(410, $response->statusCode);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -149,18 +117,12 @@ class FamilySearchIntegrationTest extends ApiTestCase
             'Redirect functionality is verified via testPendingModification and manual testing.'
         );
 
-        VCR::turnOn();
-        VCR::insertCassette('testRedirect.json');
-
         $this->assertResponseOK($this->login());
         $response = $this->client->get('/platform/tree/current-person');
 
         $this->assertTrue($response->redirected);
         $this->assertEquals('https://api-integ.familysearch.org/platform/tree/current-person', $response->originalUrl);
         $this->assertEquals('https://api-integ.familysearch.org/platform/tree/persons/KW7G-28J', $response->effectiveUrl);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -190,9 +152,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
             'Pending modification functionality is verified via manual testing.'
         );
 
-        VCR::turnOn();
-        VCR::insertCassette('testPendingModification.json');
-
         $creds = $this->getCredentials();
         $this->client = new \FamilySearch([
             'appKey' => $creds['api_key'],
@@ -211,9 +170,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
         $this->assertTrue($response->redirected);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -221,9 +177,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
      */
     public function testUserAgent(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('testUserAgent.json');
-
         $creds = $this->getCredentials();
         $this->client = new \FamilySearch([
             'appKey' => $creds['api_key'],
@@ -239,8 +192,5 @@ class FamilySearchIntegrationTest extends ApiTestCase
         $this->assertStringContainsString('curl', $response->requestHeaders['User-Agent']);
         $this->assertStringContainsString('PHP', $response->requestHeaders['User-Agent']);
         $this->assertStringContainsString('myApp/1.2.3', $response->requestHeaders['User-Agent']);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 }

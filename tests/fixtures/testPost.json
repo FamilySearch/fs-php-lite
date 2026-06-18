@@ -66,4 +66,160 @@
             "Connection": "keep-alive"
         }
     }
-}]
+}
+-
+    request:
+        method: POST
+        url: 'https://integration.familysearch.org/cis-web/oauth2/v3/token'
+        headers:
+            Host: integration.familysearch.org
+            content-type: application/x-www-form-urlencoded
+            Authorization: 'Bearer i0-BdS4SMN7twv.q0UyPYJ~O1c'
+            User-Agent: 'FS-PHP-Lite/1.2.0 curl/8.19.0 PHP/8.5.5'
+        body: 'grant_type=password&client_id=a02j000000CBv4gAAD&username=sdktester&password=1234sdkpass'
+    response:
+        status:
+            code: 200
+            message: ''
+        headers:
+            content-type: application/json;charset=UTF-8
+            content-length: '111'
+            date: 'Thu, 18 Jun 2026 01:11:57 GMT'
+            x-robots-tag: 'noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex'
+            cache-control: no-store
+            content-language: en-US
+            server: nginx
+            via: '1.1 8e6c2cf5874f5e4093136cc3de4d856a.cloudfront.net (CloudFront)'
+            content-security-policy: "frame-ancestors 'self' https://*.familysearch.org https://*.familysearch.psdops.com https://*.church.brightspot.cloud http://localhost:* "
+            x-frame-options: SAMEORIGIN
+            x-cache: 'Miss from cloudfront'
+            x-amz-cf-pop: SEA900-P1
+            x-amz-cf-id: KpOx15qensVvdYv-z11x0oQLXJMVgyixfcehlGGo4U9ZopMifSFJRw==
+            set-cookie: ['visid_incap_2846689=v65XVUQvR1yGcZNdnfAokNxFM2oAAAAAQUIPAAAAAADZFo04XoN9nbkHohlzEZtm; expires=Thu, 17 Jun 2027 06:53:04 GMT; HttpOnly; path=/; Domain=.familysearch.org; Secure; SameSite=None', 'nlbi_2846689=nq8QCzk+kCSP/AfQNegyBwAAAADHqyomOugLnQkjzAqyWZ6Z; HttpOnly; path=/; Domain=.familysearch.org; Secure; SameSite=None', 'incap_ses_2107_2846689=G5KLWNJxuF5Z2vI965E9Hd1FM2oAAAAA+HWEwVgpi2mF8V4i/SXHIw==; path=/; Domain=.familysearch.org; Secure; SameSite=None']
+            strict-transport-security: 'max-age=31536000; includeSubDomains'
+            x-cdn: Imperva
+            x-iinfo: '13-37154974-37154979 NNNY CT(1 6 0) RT(1781745117037 32) q(0 0 0 16) r(5 5) U24'
+        body: '{"access_token":"i0-FvlZPhnpx4x.1xoBEEHS~vN","token_type":"family_search","token":"i0-FvlZPhnpx4x.1xoBEEHS~vN"}'
+        curl_info:
+            url: 'https://integration.familysearch.org/cis-web/oauth2/v3/token'
+            content_type: application/json;charset=UTF-8
+            http_code: 200
+            header_size: 1323
+            request_size: 349
+            filetime: -1
+            ssl_verify_result: 0
+            redirect_count: 0
+            total_time: 0.644204
+            namelookup_time: 0.002242
+            connect_time: 0.023714
+            pretransfer_time: 0.048861
+            size_upload: 88.0
+            size_download: 111.0
+            speed_download: 172.0
+            speed_upload: 136.0
+            download_content_length: 111.0
+            upload_content_length: 88.0
+            starttransfer_time: 0.644137
+            redirect_time: 0.0
+            redirect_url: ''
+            primary_ip: 45.223.160.251
+            certinfo: {  }
+            primary_port: 443
+            local_ip: 192.168.68.109
+            local_port: 53050
+            http_version: 3
+            protocol: 2
+            ssl_verifyresult: 0
+            scheme: https
+            appconnect_time_us: 48786
+            queue_time_us: 18
+            connect_time_us: 23714
+            namelookup_time_us: 2242
+            pretransfer_time_us: 48861
+            redirect_time_us: 0
+            starttransfer_time_us: 644137
+            posttransfer_time_us: 48860
+            total_time_us: 644204
+            effective_method: POST
+            capath: ''
+            cainfo: ''
+            used_proxy: 0
+            httpauth_used: 0
+            proxyauth_used: 0
+            conn_id: 0
+    index: 0
+-
+    request:
+        method: POST
+        url: 'https://api-integ.familysearch.org/platform/tree/persons'
+        headers:
+            Host: api-integ.familysearch.org
+            Authorization: 'Bearer i0-FvlZPhnpx4x.1xoBEEHS~vN'
+            Accept: application/x-fs-v1+json
+            User-Agent: 'FS-PHP-Lite/1.2.0 curl/8.19.0 PHP/8.5.5'
+            content-type: application/x-fs-v1+json
+        body: '{"persons":[{"sources":[{"id":"34077598-142f-4784-b1e7-329e2b5a0625","links":{"description":{"href":"https:\/\/sandbox.familysearch.org\/platform\/sources\/descriptions\/MMZJ-GMV"},"source-reference":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/source-references\/34077598-142f-4784-b1e7-329e2b5a0625"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMDZ-8G7","resourceId":"MMDZ-8G7"},"modified":1470770475882},"description":"https:\/\/sandbox.familysearch.org\/platform\/sources\/descriptions\/MMZJ-GMV"},{"id":"c290dcce-f7eb-447b-8122-c03ae16f9b96","links":{"description":{"href":"https:\/\/sandbox.familysearch.org\/platform\/sources\/descriptions\/MMZJ-GMN"},"source-reference":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/source-references\/c290dcce-f7eb-447b-8122-c03ae16f9b96"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMDZ-8G7","resourceId":"MMDZ-8G7"},"modified":1470770441164},"description":"https:\/\/sandbox.familysearch.org\/platform\/sources\/descriptions\/MMZJ-GMN"}],"sortKey":"0000000000","identifiers":{"http:\/\/gedcomx.org\/Persistent":["https:\/\/sandbox.familysearch.org\/ark:\/61903\/4:1:L5C2-WYC"]},"living":false,"gender":{"id":"8b165ed0-5377-4c55-b4c5-1d6407166e3f","links":{"conclusion":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/conclusions\/8b165ed0-5377-4c55-b4c5-1d6407166e3f"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMFW-HTT","resourceId":"MMFW-HTT"},"modified":1467250315751},"type":"http:\/\/gedcomx.org\/Male"},"names":[{"id":"54910b54-274d-461c-adda-7190479bc4c7","links":{"conclusion":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/conclusions\/54910b54-274d-461c-adda-7190479bc4c7"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMFW-HTT","resourceId":"MMFW-HTT"},"modified":1467250315751},"type":"http:\/\/gedcomx.org\/BirthName","nameForms":[{"fullText":"Ebenezer Clark","parts":[{"type":"http:\/\/gedcomx.org\/Given","value":"Ebenezer"},{"type":"http:\/\/gedcomx.org\/Surname","value":"Clark"}]}],"preferred":true}],"facts":[{"id":"99519cb9-a8bf-4914-9f11-ccf93492b48b","links":{"conclusion":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/conclusions\/99519cb9-a8bf-4914-9f11-ccf93492b48b"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMFW-HTT","resourceId":"MMFW-HTT"},"modified":1467250315751},"type":"http:\/\/gedcomx.org\/Birth","date":{"original":"29 Nov 1651","formal":"+1651-11-29","normalized":[{"lang":"en-US","value":"29 November 1651"},{"value":"29 November 1651"}]},"place":{"original":"NEW HAVEN,NEW HAVEN,CONN","description":"#1740247784","normalized":[{"lang":"en-US","value":"New Haven, New Haven, Connecticut, United States"},{"value":"New Haven, New Haven, Connecticut, United States"},{"value":"New Haven, New Haven, Connecticut, United States"}]}},{"id":"8e9dd699-4cea-4d30-8ff2-d5d11b171937","links":{"conclusion":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/conclusions\/8e9dd699-4cea-4d30-8ff2-d5d11b171937"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMFW-HTT","resourceId":"MMFW-HTT"},"modified":1467250315751},"type":"http:\/\/gedcomx.org\/Death","date":{"original":"1721","formal":"+1721","normalized":[{"lang":"en-US","value":"1721"},{"value":"1721"}]},"place":{"original":"WALLINGFORD,NEW HAVEN CONN.","description":"#1243627151","normalized":[{"lang":"en-US","value":"Wallingford, New Haven, Connecticut, United States"},{"value":"Wallingford, New Haven, Connecticut, United States"},{"value":"Wallingford, New Haven, Connecticut, United States"}]}},{"id":"80c2512c-d2bc-422c-a0b8-66fb4621c2f7","links":{"conclusion":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/conclusions\/80c2512c-d2bc-422c-a0b8-66fb4621c2f7"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMFW-HTT","resourceId":"MMFW-HTT"},"modified":1467250315751},"type":"http:\/\/gedcomx.org\/Burial","date":{"original":"1721","formal":"+1721","normalized":[{"lang":"en-US","value":"1721"},{"value":"1721"}]},"place":{"original":"WALLINGFORD,NEW HAVEN CONN.","description":"#1243627151","normalized":[{"lang":"en-US","value":"Wallingford, New Haven, Connecticut, United States"},{"value":"Wallingford, New Haven, Connecticut, United States"},{"value":"Wallingford, New Haven, Connecticut, United States"}]}},{"id":"c36105fd-4502-4a35-867c-308623e24299","links":{"conclusion":{"href":"https:\/\/sandbox.familysearch.org\/platform\/tree\/persons\/L5C2-WYC\/conclusions\/c36105fd-4502-4a35-867c-308623e24299"}},"attribution":{"contributor":{"resource":"https:\/\/sandbox.familysearch.org\/platform\/users\/agents\/MMFW-HTT","resourceId":"MMFW-HTT"},"modified":1467250315751},"type":"http:\/\/gedcomx.org\/Christening","date":{"original":"29 Nov 1651","formal":"+1651-11-29","normalized":[{"lang":"en-US","value":"29 November 1651"},{"value":"29 November 1651"}]},"place":{"original":"NEW HAVEN,NEW HAVEN,CONN","description":"#1740247784","normalized":[{"lang":"en-US","value":"New Haven, New Haven, Connecticut, United States"},{"value":"New Haven, New Haven, Connecticut, United States"},{"value":"New Haven, New Haven, Connecticut, United States"}]}}]}],"sourceDescriptions":[{"id":"SD-L5C2-WYC","links":{"description":{"href":"https:\/\/sandbox.familysearch.org\/platform\/sources\/descriptions\/SD-L5C2-WYC"}},"citations":[{"lang":"en","value":"\"Family Tree,\" database, <i>FamilySearch<\/i> (http:\/\/familysearch.org : modified 09 August 2016, 19:21), entry for Ebenezer Clark(PID https:\/\/sandbox.familysearch.org\/ark:\/61903\/4:1:L5C2-WYC); contributed by various users."}],"about":"#L5C2-WYC","componentOf":{"description":"https:\/\/sandbox.familysearch.org\/platform\/collections\/tree"},"titles":[{"value":"Ebenezer Clark"}],"resourceType":"http:\/\/gedcomx.org\/Person","identifiers":{"http:\/\/gedcomx.org\/Persistent":["https:\/\/sandbox.familysearch.org\/ark:\/61903\/4:1:L5C2-WYC"]},"modified":1470770475000,"version":"136900632758820000"}]}'
+    response:
+        status:
+            code: 201
+            message: ''
+        headers:
+            date: 'Thu, 18 Jun 2026 01:11:58 GMT'
+            content-length: '0'
+            location: 'https://api-integ.familysearch.org/platform/tree/persons/LYXJ-3TF'
+            cache-control: 'no-cache, no-store, max-age=0, must-revalidate'
+            link: ['<https://api-integ.familysearch.org/platform/tree/ancestry?flag=fsh&person=LYXJ-3TF>; rel="ancestry"', '<https://api-integ.familysearch.org/platform/tree/descendancy?flag=fsh&person=LYXJ-3TF>; rel="descendancy"', '<https://api-integ.familysearch.org/platform/tree/persons/LYXJ-3TF/matches?flag=fsh>; rel="matches"', '<https://api-integ.familysearch.org/platform/tree/persons/LYXJ-3TF/notes?flag=fsh>; rel="notes"', '<https://api-integ.familysearch.org/platform/tree/persons?flag=fsh>; rel="persons"']
+            server: nginx
+            vary: 'Accept,Accept-Language,Accept-Encoding,Expect'
+            warning: ['400 FamilySearch "Failure in upstream call: Unable to read place representation. (upstream 404)"', '400 FamilySearch "Unable to read place reference #1740247784 (Failure in upstream call: Unable to read place representation. (upstream 404))."', '400 FamilySearch "Failure in upstream call: Unable to read place representation. (upstream 404)"', '400 FamilySearch "Unable to read place reference #1740247784 (Failure in upstream call: Unable to read place representation. (upstream 404))."', '400 FamilySearch "Failure in upstream call: Unable to read place representation. (upstream 404)"', '400 FamilySearch "Failure in upstream call: Unable to read place representation. (upstream 404)"', '400 FamilySearch "Unable to read place reference #1243627151 (Failure in upstream call: Unable to read place representation. (upstream 404))."', '400 FamilySearch "Unable to read place reference #1243627151 (Failure in upstream call: Unable to read place representation. (upstream 404))."', '400 FamilySearch "Multiple normalized date values were provided. Only the first will be accepted."', '400 FamilySearch "Multiple normalized date values were provided. Only the first will be accepted."', '400 FamilySearch "Multiple normalized date values were provided. Only the first will be accepted."', '199 FamilySearch "Too many warnings..."']
+            x-entity-id: LYXJ-3TF
+            x-processing-time: '471'
+            x-robots-tag: 'noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex'
+        curl_info:
+            url: 'https://api-integ.familysearch.org/platform/tree/persons'
+            content_type: null
+            http_code: 201
+            header_size: 2347
+            request_size: 6722
+            filetime: -1
+            ssl_verify_result: 0
+            redirect_count: 0
+            total_time: 0.886386
+            namelookup_time: 0.166393
+            connect_time: 0.227356
+            pretransfer_time: 0.348013
+            size_upload: 6451.0
+            size_download: 0.0
+            speed_download: 0.0
+            speed_upload: 7277.0
+            download_content_length: 0.0
+            upload_content_length: 6451.0
+            starttransfer_time: 0.886284
+            redirect_time: 0.0
+            redirect_url: 'https://api-integ.familysearch.org/platform/tree/persons/LYXJ-3TF'
+            primary_ip: 52.200.60.30
+            certinfo: {  }
+            primary_port: 443
+            local_ip: 192.168.68.109
+            local_port: 53051
+            http_version: 3
+            protocol: 2
+            ssl_verifyresult: 0
+            scheme: https
+            appconnect_time_us: 347576
+            queue_time_us: 30
+            connect_time_us: 227356
+            namelookup_time_us: 166393
+            pretransfer_time_us: 348013
+            redirect_time_us: 0
+            starttransfer_time_us: 886284
+            posttransfer_time_us: 348009
+            total_time_us: 886386
+            effective_method: POST
+            capath: ''
+            cainfo: ''
+            used_proxy: 0
+            httpauth_used: 0
+            proxyauth_used: 0
+            conn_id: 0
+    index: 0

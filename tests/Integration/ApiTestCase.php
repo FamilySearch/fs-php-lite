@@ -9,6 +9,7 @@ abstract class ApiTestCase extends TestCase
 {
     protected FamilySearch $client;
     private static ?array $personData = null;
+    private bool $vcrEnabled = false;
 
     /**
      * Get credentials from environment or SandboxCredentials class
@@ -51,10 +52,56 @@ abstract class ApiTestCase extends TestCase
      */
     protected function setUp(): void
     {
+        // Start VCR if test has @vcr annotation
+        $annotations = $this->getAnnotationsForTest();
+        if (isset($annotations['vcr'])) {
+            $cassetteName = $annotations['vcr'][0];
+
+            // Ensure VCR is properly configured before turning on
+            \VCR\VCR::configure()->setMode('once');
+            \VCR\VCR::configure()->setCassettePath('tests/fixtures');
+            \VCR\VCR::configure()->enableRequestMatchers(array('method','url','body'));
+            \VCR\VCR::configure()->enableLibraryHooks(array('curl'));
+
+            \VCR\VCR::turnOn();
+            \VCR\VCR::insertCassette($cassetteName);
+            $this->vcrEnabled = true;
+        }
+
         $creds = $this->getCredentials();
         $this->client = new FamilySearch([
             'appKey' => $creds['api_key']
         ]);
+    }
+
+    /**
+     * Automatically called by PHPUnit after each test is run
+     */
+    protected function tearDown(): void
+    {
+        if ($this->vcrEnabled) {
+            \VCR\VCR::eject();
+            \VCR\VCR::turnOff();
+            $this->vcrEnabled = false;
+        }
+    }
+
+    /**
+     * Get annotations for the current test method
+     */
+    private function getAnnotationsForTest(): array
+    {
+        $annotations = [];
+        try {
+            $method = new \ReflectionMethod($this, $this->nameWithDataSet());
+            $docComment = $method->getDocComment();
+            if ($docComment && preg_match('/@vcr\s+(\S+)/', $docComment, $matches)) {
+                $annotations['vcr'] = [$matches[1]];
+            }
+        } catch (\Exception $e) {
+            // If we can't get annotations, just continue without VCR
+        }
+        return $annotations;
     }
 
     /**
