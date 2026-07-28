@@ -12,11 +12,11 @@ You need credentials from the FamilySearch Developer Program:
 - API key (app key) from registered application
 
 **How to get credentials:**
-1. Visit https://www.familysearch.org/developers/
+1. Visit https://developers.familysearch.org/
 2. Create an account or sign in
 3. Register a new application
 4. Request sandbox access
-5. Note your API key and sandbox credentials
+5. If approved, note your API key and sandbox credentials
 
 ### 2. Required Environment Variables
 
@@ -504,9 +504,8 @@ grep -i "password\|secret" tests/fixtures/*.json
 
 ## Additional Resources
 
-- **VCR Modes:** https://github.com/php-vcr/php-vcr#record-modes
 - **FamilySearch API:** https://developers.familysearch.org/
-- **Sandbox Guide:** https://www.familysearch.org/developers/docs/guides/sandbox
+- **Sandbox Guide:** https://developers.familysearch.org/main/reference/api-reference-guide
 - **Test Documentation:** See `TESTING.md` in repository
 
 ---
