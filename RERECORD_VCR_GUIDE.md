@@ -26,7 +26,7 @@ Set these before re-recording:
 export FAMILYSEARCH_USERNAME="your-sandbox-username"
 export FAMILYSEARCH_PASSWORD="your-sandbox-password"
 export FAMILYSEARCH_API_KEY="your-app-key"
-export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # Optional
+export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"
 ```
 
 **Verify credentials are set:**
