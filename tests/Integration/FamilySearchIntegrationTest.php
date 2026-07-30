@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace FamilySearch\Tests\Integration;
 
 use VCR\VCR;
