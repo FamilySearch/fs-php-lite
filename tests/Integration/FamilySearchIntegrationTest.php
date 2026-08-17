@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace FamilySearch\Tests\Integration;
 
 /**
- * Integration tests against live FamilySearch sandbox API
+ * Integration tests against live FamilySearch integration API
  */
 class FamilySearchIntegrationTest extends ApiTestCase
 {

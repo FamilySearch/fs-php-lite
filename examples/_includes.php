@@ -47,7 +47,7 @@ if (empty($appKey)) {
 // Basic configuration (suitable for development/testing)
 // For production, enable encryption (see commented example below)
 $fs = new FamilySearch([
-  'environment' => 'sandbox',
+  'environment' => 'integration',
   'appKey' => $appKey,  // From environment variable (secure)
   'redirectUri' => calculateBaseUrl() . '/examples/oauthResponse.php',
 ]);

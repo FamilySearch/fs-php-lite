@@ -7,7 +7,7 @@ namespace FamilySearch\Tests\Integration;
 /**
  * Example credentials template for integration tests
  *
- * Copy this file to SandboxCredentials.php and fill in your credentials,
+ * Copy this file to IntegrationCredentials.php and fill in your credentials,
  * OR set environment variables (recommended):
  *   - FAMILYSEARCH_USERNAME
  *   - FAMILYSEARCH_PASSWORD
@@ -15,9 +15,9 @@ namespace FamilySearch\Tests\Integration;
  *   - FAMILYSEARCH_REDIRECT_URI (optional)
  *
  * Note: Credentials are NOT stored in this repository.
- * Request sandbox access through the FamilySearch developer program.
+ * Request integration environment access through the FamilySearch developer program.
  */
-class SandboxCredentials
+class IntegrationCredentials
 {
     const USERNAME = ''; // Set via FAMILYSEARCH_USERNAME env var
     const PASSWORD = ''; // Set via FAMILYSEARCH_PASSWORD env var

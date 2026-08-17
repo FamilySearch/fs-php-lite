@@ -13,7 +13,7 @@ abstract class ApiTestCase extends TestCase
     private static ?array $personData = null;
 
     /**
-     * Get credentials from environment or SandboxCredentials class
+     * Get credentials from environment or IntegrationCredentials class
      */
     protected function getCredentials(): array
     {
@@ -23,12 +23,12 @@ abstract class ApiTestCase extends TestCase
         $apiKey = getenv('FAMILYSEARCH_API_KEY');
         $redirectUri = getenv('FAMILYSEARCH_REDIRECT_URI');
 
-        // Fall back to SandboxCredentials if it exists and has values
-        if (empty($apiKey) && class_exists('FamilySearch\Tests\Integration\SandboxCredentials')) {
-            $username = $username ?: SandboxCredentials::USERNAME;
-            $password = $password ?: SandboxCredentials::PASSWORD;
-            $apiKey = $apiKey ?: SandboxCredentials::API_KEY;
-            $redirectUri = $redirectUri ?: SandboxCredentials::REDIRECT_URI;
+        // Fall back to IntegrationCredentials if it exists and has values
+        if (empty($apiKey) && class_exists('FamilySearch\Tests\Integration\IntegrationCredentials')) {
+            $username = $username ?: IntegrationCredentials::USERNAME;
+            $password = $password ?: IntegrationCredentials::PASSWORD;
+            $apiKey = $apiKey ?: IntegrationCredentials::API_KEY;
+            $redirectUri = $redirectUri ?: IntegrationCredentials::REDIRECT_URI;
         }
 
         return [
@@ -60,7 +60,7 @@ abstract class ApiTestCase extends TestCase
     }
 
     /**
-     * Authenticate with sandbox via the OAuth2 password flow
+     * Authenticate with integration environment via the OAuth2 password flow
      */
     protected function login(): object
     {

@@ -327,7 +327,7 @@ composer test
 # Run only unit tests (fast, ~0.01s)
 composer test:unit
 
-# Run integration tests against live FamilySearch sandbox API
+# Run integration tests against live FamilySearch integration API
 # Requires credentials (see below)
 composer test:integration
 
@@ -340,7 +340,7 @@ composer test:coverage
 - **102 tests** with 232 assertions
 - **76.33% line coverage**, 50.00% method coverage
 - **74 unit tests** - Fast, no HTTP requests
-- **28 integration tests** - Test against live FamilySearch sandbox API
+- **28 integration tests** - Test against live FamilySearch integration API
 
 ### Test Structure
 
@@ -354,11 +354,11 @@ tests/
 
 ### Integration Test Credentials
 
-Integration tests require FamilySearch sandbox credentials. Set these environment variables:
+Integration tests require FamilySearch integration environment credentials. Set these environment variables:
 
 ```bash
-export FAMILYSEARCH_USERNAME="your-sandbox-username"
-export FAMILYSEARCH_PASSWORD="your-sandbox-password"
+export FAMILYSEARCH_USERNAME="your-integration-username"
+export FAMILYSEARCH_PASSWORD="your-integration-password"
 export FAMILYSEARCH_API_KEY="your-api-key"
 export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # optional
 ```
@@ -366,8 +366,8 @@ export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # optional
 **How to get credentials:**
 1. Visit https://developers.familysearch.org/
 2. Create an account and register an application
-3. Request sandbox access
-4. Use your sandbox credentials for testing
+3. Request integration environment access
+4. Use your integration credentials for testing
 
 ### Running Tests on Specific PHP Versions
 
