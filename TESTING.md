@@ -1,277 +1,91 @@
-# Testing Guide for fs-php-lite
+# Testing Your Application with fs-php-lite
 
-This guide explains how to run and write tests for the FamilySearch PHP Lite SDK.
+This guide helps you test your own applications that use the FamilySearch PHP Lite SDK.
 
-## Testing Strategy
+## Unit Testing Your Code
 
-The SDK uses a multi-layered testing approach:
-
-1. **Unit Tests** - Test SDK methods in isolation without making HTTP requests
-2. **Integration Tests** - Test SDK against live FamilySearch sandbox API
-3. **Example Applications** - Working demos that serve as smoke tests
-
-## Prerequisites
-
-- PHP 8.1, 8.2, or 8.3
-- Composer
-- Xdebug (for code coverage)
-
-## Installation
-
-Install development dependencies:
-
-```bash
-composer install
-```
-
-## Running Tests
-
-### Run All Tests
-```bash
-composer test
-```
-
-### Run Unit Tests Only
-```bash
-composer test:unit
-```
-
-### Run Integration Tests Only
-```bash
-composer test:integration
-```
-
-### Run with Code Coverage
-```bash
-composer test:coverage
-```
-
-This generates an HTML coverage report in the `coverage/` directory.
-
-### Run Specific Test File
-```bash
-vendor/bin/phpunit tests/Unit/FamilySearchConfigTest.php
-```
-
-### Run Specific Test Method
-```bash
-vendor/bin/phpunit --filter testConstructorWithAccessToken
-```
-
-## Test Structure
-
-```
-tests/
-├── bootstrap.php           # Test bootstrapping
-├── Unit/                   # Unit tests (no HTTP requests)
-│   ├── FamilySearchConfigTest.php
-│   └── FamilySearchHttpMethodsTest.php
-├── Integration/            # Integration tests (live API)
-│   ├── ApiTestCase.php
-│   ├── SandboxCredentials.php
-│   └── FamilySearchIntegrationTest.php
-└── fixtures/               # Test data
-    └── person.json
-```
-
-## Writing Tests
-
-### Unit Tests
-
-Unit tests should test SDK logic without making actual HTTP requests:
+When writing unit tests for your application code that uses the SDK, you can mock the `FamilySearch` class to avoid making real HTTP requests:
 
 ```php
-<?php
-
-namespace FamilySearch\Tests\Unit;
-
 use PHPUnit\Framework\TestCase;
-use FamilySearch;
 
-class MyTest extends TestCase
+class MyAppTest extends TestCase
 {
-    public function testSomething(): void
+    public function testMyFeature(): void
     {
-        $fs = new FamilySearch(['accessToken' => 'test-token']);
+        // Mock the SDK
+        $mockFS = $this->createMock(FamilySearch::class);
         
-        $this->assertEquals('test-token', $fs->getAccessToken());
+        // Set up expected behavior
+        $mockResponse = (object)[
+            'statusCode' => 200,
+            'data' => ['persons' => [/* ... */]]
+        ];
+        $mockFS->method('get')->willReturn($mockResponse);
+        
+        // Test your code that uses the SDK
+        $myService = new MyService($mockFS);
+        $result = $myService->doSomething();
+        
+        $this->assertNotEmpty($result);
     }
 }
 ```
 
-### Integration Tests
+## Integration Testing Against Integration Environment
 
-Integration tests make real HTTP calls to the FamilySearch sandbox API:
+To test your application against the live FamilySearch Integration environment, initialize the SDK with an access token obtained through the standard OAuth2 authorization flow:
 
 ```php
-<?php
-
-namespace FamilySearch\Tests\Integration;
-
-class MyIntegrationTest extends ApiTestCase
+class MyIntegrationTest extends TestCase
 {
-    public function testApiCall(): void
+    private FamilySearch $fs;
+    
+    protected function setUp(): void
     {
-        $response = $this->login();
-        $this->assertResponseOK($response);
-
-        $response = $this->client->get('/platform/users/current');
-        $this->assertResponseOK($response);
+        $this->fs = new FamilySearch([
+            'environment' => 'integration',
+            'appKey' => $_ENV['FAMILYSEARCH_API_KEY'],
+            'redirectUri' => $_ENV['FAMILYSEARCH_REDIRECT_URI'],
+            // Use a pre-obtained access token for testing
+            'accessToken' => $_ENV['FAMILYSEARCH_ACCESS_TOKEN']
+        ]);
+    }
+    
+    public function testGetCurrentUser(): void
+    {
+        $response = $this->fs->get('/platform/users/current');
+        
+        $this->assertEquals(200, $response->statusCode);
+        $this->assertArrayHasKey('users', $response->data);
     }
 }
 ```
 
-Integration tests require valid FamilySearch sandbox credentials (see credentials section below).
+**Note:** Integration tests require a valid access token. Since FamilySearch uses OAuth2 authorization code flow (which requires browser interaction), you'll need to:
+1. Manually complete the OAuth flow once to obtain an access token
+2. Store the token securely (e.g., in an environment variable)
+3. Use that token in your automated tests
+4. Refresh or regenerate the token when it expires
 
-## Code Coverage Target
+## Getting Integration Environment Access
 
-The SDK aims for **70-80% code coverage** for core functionality:
+To test against the FamilySearch Integration environment:
 
-- `src/FamilySearch.php` - Target: 75%+
-
-To view coverage:
-```bash
-composer test:coverage
-open coverage/index.html
-```
-
-## Continuous Integration
-
-Tests run automatically on every push and pull request via GitHub Actions.
-
-The CI pipeline:
-- Tests against PHP 8.1, 8.2, and 8.3
-- Runs both unit and integration tests
-- Generates code coverage reports (PHP 8.3 only)
-- Uploads coverage to Codecov
-
-See [.github/workflows/tests.yml](.github/workflows/tests.yml) for configuration.
-
-## Integration Tests Against Live API
-
-Integration tests make real HTTP requests to the FamilySearch sandbox API.
-
-### How It Works
-
-Tests authenticate with the sandbox API using OAuth2 password flow and perform real operations:
-- Create/read/update/delete persons
-- Test redirects
-- Verify headers and response structure
-- Test authentication flows
-
-### Benefits
-
-- Tests always reflect current API behavior
-- No recording/replay complexity
-- Headers, redirects, and dynamic IDs work correctly
-- Simpler test code and maintenance
-
-### Requirements
-
-- Valid FamilySearch sandbox credentials
-- Network connectivity
-- Sandbox API availability
-
-## Common Issues
-
-### Test Failures
-
-**"Class 'FamilySearch' not found"**
-- Run `composer install` to generate autoload files
-- Verify `vendor/autoload.php` exists
-
-**"PHP Fatal error: Class 'PHPUnit\Framework\TestCase' not found"**
-- Ensure you're using PHPUnit 9+: `composer require --dev phpunit/phpunit:^9.5`
-
-**Integration tests fail with authentication errors**
-- Ensure credentials are set via environment variables or `SandboxCredentials.php`
-- Verify credentials are valid for the FamilySearch sandbox environment
-
-### Code Coverage
-
-**"No code coverage driver available"**
-- Install Xdebug: `pecl install xdebug`
-- Or use PCOV: `pecl install pcov`
-- Enable extension in php.ini
-
-**Coverage report is empty**
-- Ensure Xdebug is enabled: `php -v` should show "with Xdebug"
-- Run with: `XDEBUG_MODE=coverage composer test:coverage`
-
-## Credentials for Integration Tests
-
-Integration tests require credentials from the [FamilySearch Developer Program](https://www.familysearch.org/developers/).
-
-**Important**: Credentials are NOT stored in this repository and must be provided externally.
-
-#### Option 1: Environment Variables (Recommended)
-
-Set environment variables before running tests:
+1. Visit https://developers.familysearch.org/
+2. Create an account and register your application
+3. Your app key is automatically enabled for Integration environment access
+4. Obtain an access token:
+   - Visit https://integration.familysearch.org/platform/ (or https://beta.familysearch.org/platform/ for Beta) to get a token without completing the full OAuth2 flow
+   - Complete the OAuth2 authorization flow in your application
+5. Store your credentials in environment variables:
 
 ```bash
-export FAMILYSEARCH_USERNAME="your-username"
-export FAMILYSEARCH_PASSWORD="your-password"
 export FAMILYSEARCH_API_KEY="your-api-key"
-export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # optional
-
-composer test:integration
+export FAMILYSEARCH_REDIRECT_URI="http://localhost/callback"
+export FAMILYSEARCH_ACCESS_TOKEN="your-access-token"
 ```
 
-#### Option 2: Local Configuration File
+**Integration Environment URL:** https://integration.familysearch.org/
 
-Copy the example file and fill in your credentials:
-
-```bash
-cp tests/Integration/SandboxCredentials.example.php tests/Integration/SandboxCredentials.php
-# Edit SandboxCredentials.php with your credentials
-```
-
-**Note**: `SandboxCredentials.php` is git-ignored and will never be committed.
-
-### CI/CD Behavior
-
-GitHub Actions CI requires credentials to be set as repository secrets:
-- `FAMILYSEARCH_USERNAME`
-- `FAMILYSEARCH_PASSWORD`
-- `FAMILYSEARCH_API_KEY`
-
-Tests run against the live sandbox API in CI.
-
-## Best Practices
-
-1. **Write unit tests first** - They're fast and don't require network access
-2. **Use descriptive test names** - `testGetPersonReturnsValidResponse` not `testGet`
-3. **One assertion per test** - Makes failures easier to diagnose
-4. **Never commit credentials** - Always use environment variables or git-ignored files. Credentials are NOT stored in this repository.
-5. **Test edge cases** - Error conditions, empty responses, malformed data
-6. **Integration tests hit live API** - Ensure credentials are set before running
-
-## PHP Version Testing
-
-To test against specific PHP versions locally using Docker:
-
-```bash
-# PHP 8.1
-docker run --rm -v $(pwd):/app -w /app php:8.1-cli composer test
-
-# PHP 8.2
-docker run --rm -v $(pwd):/app -w /app php:8.2-cli composer test
-
-# PHP 8.3
-docker run --rm -v $(pwd):/app -w /app php:8.3-cli composer test
-```
-
-## Contributing
-
-When submitting pull requests:
-
-1. Ensure all tests pass: `composer test`
-2. Add tests for new functionality
-3. Maintain or improve code coverage
-4. Run tests against all supported PHP versions
-
-## Resources
-
-- [PHPUnit Documentation](https://phpunit.de/documentation.html)
-- [FamilySearch API Documentation](https://www.familysearch.org/developers/docs/api)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+**Important:** Never commit credentials or access tokens to version control. Use environment variables or a git-ignored configuration file.

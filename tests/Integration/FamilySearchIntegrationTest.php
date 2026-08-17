@@ -95,7 +95,6 @@ class FamilySearchIntegrationTest extends ApiTestCase
 
         $this->assertNotNull($personId);
 
-        // Make API call to a real endpoint
         $response = $this->client->get('/platform/tree/persons/' . $personId);
 
         $this->assertResponseOK($response);
