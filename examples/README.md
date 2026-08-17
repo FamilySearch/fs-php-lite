@@ -4,7 +4,7 @@ This directory contains working examples demonstrating how to use the fs-php-lit
 
 ## Prerequisites
 
-- PHP 8.1 or higher
+- PHP 7.4 or higher
 - Composer
 - FamilySearch developer account and API key ([register here](https://www.familysearch.org/developers/))
 

@@ -2,7 +2,7 @@
 
 [![Packagist](https://img.shields.io/packagist/v/familysearch/fs-php-lite.svg)](https://packagist.org/packages/familysearch/fs-php-lite)
 ![Tests](https://github.com/FamilySearch/fs-php-lite/workflows/Tests/badge.svg?branch=master)
-[![PHP Version](https://img.shields.io/badge/php-8.0%20%7C%208.1%20%7C%208.2%20%7C%208.3%20%7C%208.4%20%7C%208.5-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
+[![PHP Version](https://img.shields.io/badge/php-7.4%20%7C%208.0%20%7C%208.1%20%7C%208.2%20%7C%208.3%20%7C%208.4%20%7C%208.5-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
 
 > **⚠️ Security Notice:** Access tokens are stored in plaintext by default. Enable encryption in production. See [Security Considerations](#security-considerations).
 
@@ -373,11 +373,11 @@ export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # optional
 
 ```bash
 # Using Docker
-docker run --rm -v $(pwd):/app -w /app php:8.0-cli composer test
+docker run --rm -v $(pwd):/app -w /app php:7.4-cli composer test
 docker run --rm -v $(pwd):/app -w /app php:8.3-cli composer test
 
 # Using phpenv (if installed)
-phpenv local 8.0 && composer test
+phpenv local 7.4 && composer test
 phpenv local 8.3 && composer test
 ```
 
@@ -391,13 +391,14 @@ composer test:coverage
 open coverage/index.html
 ```
 
-See [TESTING.md](TESTING.md) for detailed testing documentation.
+See [TESTING.md](TESTING.md) for detailed instructions to create testing for your own application.
 
 ## Requirements
 
-- PHP 8.0 or higher
+- PHP 7.4 or higher
 - ext-curl
 - ext-json
+- Composer for dependency management
 
 ## Development
 
@@ -412,14 +413,14 @@ See [TESTING.md](TESTING.md) for detailed testing documentation.
 ### CI/CD
 
 Tests run automatically via GitHub Actions on:
-- **PHP 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5**
+- **PHP 7.4, 8.0, 8.1, 8.2, 8.3, and 8.4**
 - **Every push** to master/main branches
 - **Every pull request**
 - **Code coverage** generated for PHP 8.3
 - **Coverage reports** uploaded to Codecov
 
 #### CI Status
-- ✅ All PHP versions passing (8.0-8.5)
+- ✅ All PHP versions passing (7.4-8.4)
 - ✅ 102 tests, 232 assertions
 - ✅ 76.33% code coverage (258/338 lines)
 
@@ -427,8 +428,8 @@ See [.github/workflows/tests.yml](.github/workflows/tests.yml) for CI configurat
 
 ### PHP Version Compatibility
 
-**Minimum:** PHP 8.0  
-**Tested:** PHP 8.0, 8.1, 8.2, 8.3, 8.4, 8.5  
+**Minimum:** PHP 7.4  
+**Tested:** PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4  
 **Recommended:** PHP 8.2+ for security updates
 
-All tests pass on PHP 8.0-8.5 with zero deprecation warnings.
+All tests pass on PHP 7.4-8.4 with zero deprecation warnings.
