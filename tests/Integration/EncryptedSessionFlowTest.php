@@ -54,7 +54,6 @@ class EncryptedSessionFlowTest extends TestCase
         // Invoke private oauthResponseHandler
         $reflection = new ReflectionClass($fs);
         $method = $reflection->getMethod('oauthResponseHandler');
-        $method->setAccessible(true);
 
         return $method->invoke($fs, $mockResponse);
     }

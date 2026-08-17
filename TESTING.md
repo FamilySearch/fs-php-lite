@@ -7,7 +7,7 @@ This guide explains how to run and write tests for the FamilySearch PHP Lite SDK
 The SDK uses a multi-layered testing approach:
 
 1. **Unit Tests** - Test SDK methods in isolation without making HTTP requests
-2. **Integration Tests** - Test SDK against recorded FamilySearch API responses using php-vcr
+2. **Integration Tests** - Test SDK against live FamilySearch sandbox API
 3. **Example Applications** - Working demos that serve as smoke tests
 
 ## Prerequisites
@@ -62,17 +62,15 @@ vendor/bin/phpunit --filter testConstructorWithAccessToken
 
 ```
 tests/
-├── bootstrap.php           # Test bootstrapping and VCR configuration
+├── bootstrap.php           # Test bootstrapping
 ├── Unit/                   # Unit tests (no HTTP requests)
 │   ├── FamilySearchConfigTest.php
 │   └── FamilySearchHttpMethodsTest.php
-├── Integration/            # Integration tests (with VCR recordings)
+├── Integration/            # Integration tests (live API)
 │   ├── ApiTestCase.php
 │   ├── SandboxCredentials.php
 │   └── FamilySearchIntegrationTest.php
-└── fixtures/               # VCR cassettes and test data
-    ├── testAuthenticate.json
-    ├── testGet.json
+└── fixtures/               # Test data
     └── person.json
 ```
 
@@ -103,36 +101,27 @@ class MyTest extends TestCase
 
 ### Integration Tests
 
-Integration tests use php-vcr to record and replay HTTP interactions:
+Integration tests make real HTTP calls to the FamilySearch sandbox API:
 
 ```php
 <?php
 
 namespace FamilySearch\Tests\Integration;
 
-use VCR\VCR;
-
 class MyIntegrationTest extends ApiTestCase
 {
-    /**
-     * @vcr myTest.json
-     */
     public function testApiCall(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('myTest.json');
-
-        $response = $this->client->get('/platform/users/current');
-        
+        $response = $this->login();
         $this->assertResponseOK($response);
 
-        VCR::eject();
-        VCR::turnOff();
+        $response = $this->client->get('/platform/users/current');
+        $this->assertResponseOK($response);
     }
 }
 ```
 
-The first time this test runs, it makes a real API call and records the response in `tests/fixtures/myTest.json`. Subsequent runs replay the recorded response.
+Integration tests require valid FamilySearch sandbox credentials (see credentials section below).
 
 ## Code Coverage Target
 
@@ -158,52 +147,30 @@ The CI pipeline:
 
 See [.github/workflows/tests.yml](.github/workflows/tests.yml) for configuration.
 
-## php-vcr (HTTP Recording)
+## Integration Tests Against Live API
 
-Integration tests use [php-vcr](https://github.com/php-vcr/php-vcr) to record and replay HTTP interactions.
+Integration tests make real HTTP requests to the FamilySearch sandbox API.
 
 ### How It Works
 
-1. First test run: Makes real HTTP request, saves response to cassette file
-2. Subsequent runs: Replays response from cassette file (no network call)
+Tests authenticate with the sandbox API using OAuth2 password flow and perform real operations:
+- Create/read/update/delete persons
+- Test redirects
+- Verify headers and response structure
+- Test authentication flows
 
-### Cassette Files
+### Benefits
 
-Located in `tests/fixtures/`, these JSON files contain:
-- Request details (method, URL, headers, body)
-- Response details (status, headers, body)
+- Tests always reflect current API behavior
+- No recording/replay complexity
+- Headers, redirects, and dynamic IDs work correctly
+- Simpler test code and maintenance
 
-### Known VCR Limitations
+### Requirements
 
-**Header Extraction Issues**: VCR cassettes contain the full HTTP response headers (including `X-ENTITY-ID`), but when VCR replays responses, some headers may not be properly accessible to the SDK. This is a known limitation of how VCR intercepts curl_exec() calls. Tests that depend on response headers may fail when run with VCR cassettes but pass against the live API.
-
-**Redirect Handling**: The SDK manually follows HTTP redirects to work around curl_exec() limitations. VCR's interception interferes with this redirect handling, causing redirect tests to fail during playback. The `testRedirect` test is intentionally skipped for this reason, and redirect functionality is verified through manual testing.
-
-**Dynamic Person IDs**: The `testPendingModification` test is skipped because VCR does not reliably replay workflows involving dynamically created resources. Each live API request creates a new person with a unique ID that doesn't match pre-recorded cassette URLs, causing VCR to make unintended live requests that result in 404 errors. This is a VCR infrastructure limitation, not an SDK defect. The pending modifications functionality (X-FS-Feature-Tag header) is working correctly and can be verified through manual testing against the live API.
-
-**Workarounds**:
-- For development and CI, unit tests provide deterministic, fast validation without these issues
-- Integration tests with VCR validate request/response structure and JSON parsing
-- Manual testing against the live API (see below) validates full end-to-end behavior including headers, redirects, and dynamic workflows
-
-### Re-recording Cassettes
-
-To update cassettes with fresh API responses:
-
-```bash
-# Delete old cassettes
-rm tests/fixtures/*.json
-
-# Re-run tests to record new cassettes
-composer test:integration
-```
-
-### VCR Configuration
-
-See `tests/bootstrap.php` for VCR configuration:
-- Request matching rules
-- Cassette storage location
-- Library hooks
+- Valid FamilySearch sandbox credentials
+- Network connectivity
+- Sandbox API availability
 
 ## Common Issues
 
@@ -213,12 +180,12 @@ See `tests/bootstrap.php` for VCR configuration:
 - Run `composer install` to generate autoload files
 - Verify `vendor/autoload.php` exists
 
-**"VCR cassette not found"**
-- Ensure cassette file exists in `tests/fixtures/`
-- Check the `@vcr` annotation matches the filename
-
 **"PHP Fatal error: Class 'PHPUnit\Framework\TestCase' not found"**
-- Ensure you're using PHPUnit 10+: `composer require --dev phpunit/phpunit:^10.5`
+- Ensure you're using PHPUnit 9+: `composer require --dev phpunit/phpunit:^9.5`
+
+**Integration tests fail with authentication errors**
+- Ensure credentials are set via environment variables or `SandboxCredentials.php`
+- Verify credentials are valid for the FamilySearch sandbox environment
 
 ### Code Coverage
 
@@ -233,17 +200,7 @@ See `tests/bootstrap.php` for VCR configuration:
 
 ## Credentials for Integration Tests
 
-### Default: VCR Cassettes (No Credentials Needed)
-
-Integration tests use pre-recorded VCR cassettes by default. No credentials are required for normal testing:
-
-```bash
-composer test:integration  # Uses recorded API responses
-```
-
-### Optional: Testing Against Live API
-
-To test against the live FamilySearch sandbox API, you need credentials obtained through the [FamilySearch Developer Program](https://www.familysearch.org/developers/).
+Integration tests require credentials from the [FamilySearch Developer Program](https://www.familysearch.org/developers/).
 
 **Important**: Credentials are NOT stored in this repository and must be provided externally.
 
@@ -273,40 +230,21 @@ cp tests/Integration/SandboxCredentials.example.php tests/Integration/SandboxCre
 
 ### CI/CD Behavior
 
-GitHub Actions CI runs integration tests using **only** pre-recorded VCR cassettes. No live credentials are used in CI to ensure:
-- Tests are fast and deterministic
-- No risk of rate limiting
-- No secrets management required
-- Tests work even if the sandbox API is unavailable
+GitHub Actions CI requires credentials to be set as repository secrets:
+- `FAMILYSEARCH_USERNAME`
+- `FAMILYSEARCH_PASSWORD`
+- `FAMILYSEARCH_API_KEY`
 
-### Re-recording Cassettes
-
-To update cassettes with fresh API responses (requires credentials):
-
-```bash
-# Set credentials via environment variables
-export FAMILYSEARCH_USERNAME="your-username"
-export FAMILYSEARCH_PASSWORD="your-password"
-export FAMILYSEARCH_API_KEY="your-api-key"
-
-# Delete old cassettes
-rm tests/fixtures/*.json
-
-# Re-run tests to record new responses
-composer test:integration
-```
-
-**Note**: Live API testing can be affected by rate limiting and requires valid sandbox credentials.
+Tests run against the live sandbox API in CI.
 
 ## Best Practices
 
 1. **Write unit tests first** - They're fast and don't require network access
 2. **Use descriptive test names** - `testGetPersonReturnsValidResponse` not `testGet`
 3. **One assertion per test** - Makes failures easier to diagnose
-4. **Keep cassettes up to date** - Re-record when API changes
-5. **Never commit credentials** - Always use environment variables or git-ignored files. Credentials are NOT stored in this repository.
-6. **Test edge cases** - Error conditions, empty responses, malformed data
-7. **Use VCR cassettes in CI** - Integration tests should run on recorded responses, not live API calls
+4. **Never commit credentials** - Always use environment variables or git-ignored files. Credentials are NOT stored in this repository.
+5. **Test edge cases** - Error conditions, empty responses, malformed data
+6. **Integration tests hit live API** - Ensure credentials are set before running
 
 ## PHP Version Testing
 
@@ -330,12 +268,10 @@ When submitting pull requests:
 1. Ensure all tests pass: `composer test`
 2. Add tests for new functionality
 3. Maintain or improve code coverage
-4. Update cassettes if API interactions changed
-5. Run tests against all supported PHP versions
+4. Run tests against all supported PHP versions
 
 ## Resources
 
 - [PHPUnit Documentation](https://phpunit.de/documentation.html)
-- [php-vcr Documentation](https://github.com/php-vcr/php-vcr)
 - [FamilySearch API Documentation](https://www.familysearch.org/developers/docs/api)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)

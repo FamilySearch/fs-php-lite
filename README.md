@@ -327,7 +327,8 @@ composer test
 # Run only unit tests (fast, ~0.01s)
 composer test:unit
 
-# Run only integration tests (with VCR, ~9s)
+# Run integration tests against live FamilySearch sandbox API
+# Requires credentials (see below)
 composer test:integration
 
 # Generate code coverage report
@@ -339,18 +340,34 @@ composer test:coverage
 - **60 tests** with 123 assertions
 - **79.89% line coverage**, 72.22% method coverage
 - **52 unit tests** - Fast, no HTTP requests
-- **11 integration tests** - Using recorded API responses (php-vcr)
-- **2 skipped tests** - Due to VCR limitations (documented)
+- **11 integration tests** - Test against live FamilySearch sandbox API
 
 ### Test Structure
 
 ```
 tests/
 ├── Unit/                    # 52 tests - SDK logic without HTTP
-├── Integration/             # 11 tests - Full SDK with recorded HTTP
-├── fixtures/                # VCR cassettes (HTTP recordings)
+├── Integration/             # 11 tests - Full SDK against live API
+├── fixtures/                # Test data (person.json)
 └── bootstrap.php            # Test configuration
 ```
+
+### Integration Test Credentials
+
+Integration tests require FamilySearch sandbox credentials. Set these environment variables:
+
+```bash
+export FAMILYSEARCH_USERNAME="your-sandbox-username"
+export FAMILYSEARCH_PASSWORD="your-sandbox-password"
+export FAMILYSEARCH_API_KEY="your-api-key"
+export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # optional
+```
+
+**How to get credentials:**
+1. Visit https://developers.familysearch.org/
+2. Create an account and register an application
+3. Request sandbox access
+4. Use your sandbox credentials for testing
 
 ### Running Tests on Specific PHP Versions
 
@@ -374,26 +391,7 @@ composer test:coverage
 open coverage/index.html
 ```
 
-### Re-recording VCR Cassettes
-
-VCR cassettes record API responses for fast, deterministic integration tests.
-
-```bash
-# Set credentials (required for re-recording)
-export FAMILYSEARCH_USERNAME="your-sandbox-username"
-export FAMILYSEARCH_PASSWORD="your-sandbox-password"
-export FAMILYSEARCH_API_KEY="your-api-key"
-
-# Delete old cassettes
-rm tests/fixtures/test*.json
-
-# Re-run integration tests (records new cassettes)
-composer test:integration
-```
-
-**Note:** Cassettes should be re-recorded quarterly or when API changes.
-
-See [TESTING.md](TESTING.md) for detailed testing documentation, and [RERECORD_VCR_GUIDE.md](RERECORD_VCR_GUIDE.md) for complete cassette re-recording instructions.
+See [TESTING.md](TESTING.md) for detailed testing documentation.
 
 ## Requirements
 
