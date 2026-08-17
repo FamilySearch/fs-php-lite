@@ -4,6 +4,8 @@
 ![Tests](https://github.com/FamilySearch/fs-php-lite/workflows/Tests/badge.svg?branch=master)
 [![PHP Version](https://img.shields.io/badge/php-8.0%20%7C%208.1%20%7C%208.2%20%7C%208.3-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
 
+> **⚠️ Security Notice:** Access tokens are stored in plaintext by default. Enable encryption in production. See [Security Considerations](#security-considerations).
+
 Lite PHP SDK for the [FamilySearch API](https://familysearch.org/developers/).
 
 __Warning__: this SDK requires hard-coding the API endpoint URLs. That is
@@ -23,12 +25,16 @@ include_once('FamilySearch.php');
 // Create the SDK instance
 $fs = new FamilySearch([
   'environment' => 'production',
-  'appKey' => 'ahfud9Adjfia',
+  'appKey' => $_ENV['FS_APP_KEY'], // NEVER hardcode credentials - use environment variables
   'redirectUri' => 'https://example.com/fs-redirect',
   
   // Tell it to automatically save and load the access token from $_SESSION. 
   'sessions' => true, // This defaults to true
   'sessionVariable' => 'FS_ACCESS_TOKEN',
+  
+  // RECOMMENDED: Enable AES-256-GCM encryption for session tokens in production
+  'sessionEncryption' => true,
+  'sessionEncryptionKey' => $_ENV['FS_SESSION_ENCRYPTION_KEY'], // NEVER hardcode the key!
   
   // Necessary for when the developer wants to store the accessToken somewhere
   // besides $_SESSION
@@ -117,6 +123,164 @@ $response = $fs->request('/platform/tree/persons/PPPP-PPP', [
   'body' => $personData
 ]);
 ```
+
+## Security Considerations
+
+### Session Token Encryption
+
+**⚠️ Important:** By default, OAuth access tokens are stored in PHP `$_SESSION` in **plaintext**. This means tokens can be read by anyone with filesystem access to your server's session directory (typically `/var/lib/php/sessions`).
+
+**For production deployments**, enable optional **AES-256-GCM encryption** to protect tokens at rest:
+
+```php
+$fs = new FamilySearch([
+    'appKey' => $_ENV['FS_APP_KEY'],
+    'environment' => 'production',
+    
+    // Enable session encryption (RECOMMENDED for production)
+    'sessionEncryption' => true,
+    'sessionEncryptionKey' => $_ENV['FS_SESSION_ENCRYPTION_KEY']
+]);
+```
+
+#### Generating an Encryption Key
+
+Generate a secure 32-byte encryption key:
+
+```bash
+# Generate a base64-encoded key (recommended)
+php -r "echo base64_encode(random_bytes(32));"
+# Output: WdaFfj4iL3Epz2o9phaBbh7FyA5fJs3lCcr6YB4QQxo=
+
+# Or generate a hex-encoded key
+php -r "echo bin2hex(random_bytes(32));"
+# Output: 4c0bd859f72d55003baa72e76fea385e599c9562b1b75a1fec0831b19f04118a
+```
+
+#### Key Storage Best Practices
+
+**✅ DO:**
+- Store encryption keys in **environment variables**
+- Use a secrets manager (AWS Secrets Manager, HashiCorp Vault, Azure Key Vault)
+- Use different keys for different environments (dev, staging, production)
+- Rotate keys periodically (every 90 days recommended)
+
+**❌ DO NOT:**
+- Hardcode keys in source code
+- Commit keys to version control
+- Reuse the same key across environments
+- Use weak or predictable keys
+
+**Example with environment variable:**
+
+```bash
+# Set environment variable
+export FS_SESSION_ENCRYPTION_KEY="WdaFfj4iL3Epz2o9phaBbh7FyA5fJs3lCcr6YB4QQxo="
+
+# Or in .env file (excluded from Git)
+echo "FS_SESSION_ENCRYPTION_KEY=WdaFfj4iL3Epz2o9phaBbh7FyA5fJs3lCcr6YB4QQxo=" >> .env
+```
+
+#### What Encryption Protects
+
+Session token encryption protects against:
+
+- ✅ **Filesystem access** - Attackers who gain read access to session files
+- ✅ **Backup exposure** - Tokens remain protected in backups
+- ✅ **Disk forensics** - Deleted session files cannot reveal plaintext tokens
+- ✅ **Accidental logging** - Encrypted values logged instead of plaintext
+- ✅ **Shared hosting risks** - Other tenants cannot read your tokens
+
+#### What Encryption Does NOT Protect Against
+
+Encryption is **not a silver bullet**. It does **not** protect against:
+
+- ❌ **Active server compromise** - Attackers with code execution can access keys
+- ❌ **Memory dumps** - Tokens are plaintext in memory during request processing
+- ❌ **XSS attacks** - Client-side attacks bypass server-side encryption
+- ❌ **Session hijacking** - Valid session IDs grant access regardless of encryption
+- ❌ **Network interception** - HTTPS is required separately
+
+**Bottom Line:** Encryption protects data **at rest**. You also need HTTPS, secure session management, XSS protection, and proper server hardening.
+
+### Enabling Encryption on Existing Deployments
+
+Enabling encryption on an existing application is **seamless and backward-compatible**. No downtime or manual migration required.
+
+#### Step 1: Generate Encryption Key
+
+```bash
+php -r "echo base64_encode(random_bytes(32));"
+# Copy the output: WdaFfj4iL3Epz2o9phaBbh7FyA5fJs3lCcr6YB4QQxo=
+```
+
+#### Step 2: Store in Environment Variable
+
+```bash
+# Development/staging
+export FS_SESSION_ENCRYPTION_KEY="your-generated-key-here"
+
+# Production (use your deployment platform's secrets management)
+# Heroku: heroku config:set FS_SESSION_ENCRYPTION_KEY="your-key"
+# AWS: Store in Parameter Store or Secrets Manager
+# Docker: Use Docker secrets
+```
+
+#### Step 3: Update SDK Configuration
+
+```php
+$fs = new FamilySearch([
+    'appKey' => $_ENV['FS_APP_KEY'],
+    'sessionEncryption' => true,  // Add this line
+    'sessionEncryptionKey' => $_ENV['FS_SESSION_ENCRYPTION_KEY']  // Add this line
+]);
+```
+
+#### Step 4: Deploy Changes
+
+Deploy your updated application. **No manual intervention needed.**
+
+#### Step 5: Automatic Migration
+
+The migration happens automatically:
+
+1. **Existing sessions** with plaintext tokens continue to work (backward compatible)
+2. **New OAuth flows** store tokens encrypted
+3. When users re-authenticate, their tokens are encrypted automatically
+4. After natural session expiration (~24 hours), all tokens are encrypted
+
+**No forced logout. No disruption. No manual migration scripts required.**
+
+#### Verification
+
+Verify encryption is working:
+
+```bash
+# Check session files (tokens should look encrypted)
+sudo cat /var/lib/php/sessions/sess_* | grep FS_ACCESS_TOKEN
+
+# Encrypted format looks like: s:120:"base64data:base64data:base64data";
+# Plaintext format looks like: s:45:"actual-token-value-here";
+```
+
+### Additional Security Recommendations
+
+1. **Enable HTTPS** - Always use HTTPS in production
+2. **Secure session cookies** - Set `session.cookie_secure = 1` in `php.ini`
+3. **HTTPOnly cookies** - Set `session.cookie_httponly = 1` to prevent XSS
+4. **SameSite cookies** - Set `session.cookie_samesite = "Strict"` for CSRF protection
+5. **Session directory permissions** - Ensure session files are not world-readable:
+   ```bash
+   sudo chmod 700 /var/lib/php/sessions
+   ```
+6. **Regular key rotation** - Rotate encryption keys every 90 days
+
+For comprehensive security guidance, see **[SECURITY.md](SECURITY.md)** which includes:
+- Detailed threat model
+- Server configuration best practices
+- Key rotation procedures
+- Production deployment checklist
+- Incident response guidelines
 
 ## Serialization with gedcomx-php
 

@@ -6,3 +6,7 @@ coverage.xml
 .phpunit.result.cache
 tests/Integration/SandboxCredentials.php
 .idea/
+
+# Environment files
+.env
+examples/.env
