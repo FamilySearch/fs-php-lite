@@ -2,7 +2,7 @@
 
 [![Packagist](https://img.shields.io/packagist/v/familysearch/fs-php-lite.svg)](https://packagist.org/packages/familysearch/fs-php-lite)
 ![Tests](https://github.com/FamilySearch/fs-php-lite/workflows/Tests/badge.svg?branch=master)
-[![PHP Version](https://img.shields.io/badge/php-7.4%20%7C%208.0%20%7C%208.1%20%7C%208.2%20%7C%208.3%20%7C%208.4%20%7C%208.5-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
+[![PHP Version](https://img.shields.io/badge/php-7.4%20%7C%208.0%20%7C%208.1%20%7C%208.2%20%7C%208.3%20%7C%208.4-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
 
 > **⚠️ Security Notice:** Access tokens are stored in plaintext by default. Enable encryption in production. See [Security Considerations](#security-considerations).
 
@@ -13,8 +13,7 @@ considered bad practice when using the API. In most cases, FamilySearch does not
 consider URL changes as breaking changes. Read more about 
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
-There is a sample app in the `/examples` directory that is deployed to 
-http://fs-php-lite-sdk.herokuapp.com/examples/.
+There is a sample app in the `/examples` directory that demonstrates SDK usage.
 
 ## Usage
 
@@ -290,9 +289,9 @@ for serialization from objects for requests and deserialization into objects
 for responses.
 
 ```php
-$fs = new FamilySearch({
+$fs = new FamilySearch([
     'objects' => true
-});
+]);
 
 $response = $fs->post('/platform/tree/persons', [
     'body' => new \Gedcomx\Extensions\FamilySearch\FamilySearchPlatform([
