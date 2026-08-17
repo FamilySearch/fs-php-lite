@@ -199,7 +199,7 @@ jq -r '.[0].request.headers["User-Agent"]' tests/fixtures/testAuthenticate.json
 
 **Expected:**
 ```
-FS-PHP-Lite/1.2.0 curl/8.x PHP/8.x
+FS-PHP-Lite/1.3.0 curl/8.x PHP/8.x
 ```
 
 **NOT (old):**
