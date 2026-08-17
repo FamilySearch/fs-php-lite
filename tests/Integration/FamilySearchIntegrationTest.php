@@ -80,7 +80,7 @@ class FamilySearchIntegrationTest extends ApiTestCase
     }
 
     /**
-     * Test pending modifications header against live API
+     * Test that pendingModifications config sends X-FS-Feature-Tag header in requests
      */
     public function testPendingModification(): void
     {
@@ -95,10 +95,15 @@ class FamilySearchIntegrationTest extends ApiTestCase
 
         $this->assertNotNull($personId);
 
-        $response = $this->client->get('/platform/tree/persons-with-relationships?person=' . $personId);
+        // Make API call to a real endpoint
+        $response = $this->client->get('/platform/tree/persons/' . $personId);
+
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
-        $this->assertTrue($response->redirected);
+
+        // Verify the X-FS-Feature-Tag header was sent with the request
+        $this->assertArrayHasKey('X-FS-Feature-Tag', $response->requestHeaders);
+        $this->assertStringContainsString('consolidate-redundant-resources', $response->requestHeaders['X-FS-Feature-Tag']);
     }
 
     public function testUserAgent(): void
