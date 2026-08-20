@@ -671,7 +671,7 @@ If you discover a security vulnerability in this SDK, please report it responsib
 
 **DO:**
 - ✅ **SDK Issues:** Email security issues privately to [devsupport@familysearch.org](mailto:devsupport@familysearch.org)
-- ✅ **FamilySearch Platform Issues:** Report through [FamilySearch Developer Support](https://www.familysearch.org/developers/)
+- ✅ **FamilySearch Platform Issues:** Report through [FamilySearch Developer Support](https://developers.familysearch.org/)
 - ✅ Provide detailed steps to reproduce
 - ✅ Include proof-of-concept code (if applicable)
 - ✅ Give us reasonable time to fix (90 days)
@@ -747,7 +747,7 @@ We aim to:
 - [OWASP PHP Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/PHP_Configuration_Cheat_Sheet.html)
 - [PHP Session Security](https://www.php.net/manual/en/session.security.php)
 - [NIST Cryptographic Standards](https://csrc.nist.gov/publications/detail/sp/800-175b/rev-1/final)
-- [FamilySearch API Documentation](https://www.familysearch.org/developers/docs/api/)
+- [FamilySearch API Documentation](https://developers.familysearch.org/docs/api/)
 
 ### PHP Security Configuration
 

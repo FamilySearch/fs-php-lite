@@ -31,8 +31,8 @@ if (empty($appKey)) {
     <ol>
       <li>Copy <code>.env.example</code> to <code>.env</code> in the examples directory</li>
       <li>Get your FamilySearch developer app key from
-          <a href="https://www.familysearch.org/developers/" target="_blank">
-          https://www.familysearch.org/developers/</a></li>
+          <a href="https://developers.familysearch.org/" target="_blank">
+          https://developers.familysearch.org/</a></li>
       <li>Set <code>FS_APP_KEY</code> in your <code>.env</code> file</li>
       <li>Make sure <code>.env</code> is in your <code>.gitignore</code> (NEVER commit credentials!)</li>
     </ol>

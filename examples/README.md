@@ -6,7 +6,7 @@ This directory contains working examples demonstrating how to use the fs-php-lit
 
 - PHP 7.4 or higher
 - Composer
-- FamilySearch developer account and API key ([register here](https://www.familysearch.org/developers/))
+- FamilySearch developer account and API key ([register here](https://developers.familysearch.org/))
 
 ## Setup
 
