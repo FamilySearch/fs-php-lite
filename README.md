@@ -2,7 +2,7 @@
 
 [![Packagist](https://img.shields.io/packagist/v/familysearch/fs-php-lite.svg)](https://packagist.org/packages/familysearch/fs-php-lite)
 ![Tests](https://github.com/FamilySearch/fs-php-lite/workflows/Tests/badge.svg?branch=master)
-[![PHP Version](https://img.shields.io/badge/php-8.0%20%7C%208.1%20%7C%208.2%20%7C%208.3-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
+[![PHP Version](https://img.shields.io/badge/php-7.4%20%7C%208.0%20%7C%208.1%20%7C%208.2%20%7C%208.3%20%7C%208.4-blue.svg)](https://github.com/FamilySearch/fs-php-lite)
 
 > **⚠️ Security Notice:** Access tokens are stored in plaintext by default. Enable encryption in production. See [Security Considerations](#security-considerations).
 
@@ -13,8 +13,41 @@ considered bad practice when using the API. In most cases, FamilySearch does not
 consider URL changes as breaking changes. Read more about 
 [dealing with change](https://familysearch.org/developers/docs/guides/evolution).
 
-There is a sample app in the `/examples` directory that is deployed to 
-http://fs-php-lite-sdk.herokuapp.com/examples/.
+There is a sample app in the `/examples` directory that demonstrates SDK usage.
+
+## Environments
+
+The SDK supports three FamilySearch environments:
+
+### Integration
+Internal testing environment for FamilySearch developers and CI/CD pipelines. Not intended for external developer use.
+- **Identity/OAuth**: `https://identint.familysearch.org`
+- **Platform API**: `https://api-integ.familysearch.org`
+- **Use case**: Internal FamilySearch testing
+
+### Beta
+Pre-production environment for testing upcoming API features and validating application compatibility before changes reach production.
+- **Identity/OAuth**: `https://identbeta.familysearch.org`
+- **Platform API**: `https://apibeta.familysearch.org`
+- **Use case**: External developer pre-release testing
+
+### Production
+Live production environment with real FamilySearch user data.
+- **Identity/OAuth**: `https://ident.familysearch.org`
+- **Platform API**: `https://api.familysearch.org`
+- **Use case**: Live production data
+
+**Example:**
+```php
+// Integration
+$fs = new FamilySearch(['environment' => 'integration']);
+
+// Beta
+$fs = new FamilySearch(['environment' => 'beta']);
+
+// Production
+$fs = new FamilySearch(['environment' => 'production']);
+```
 
 ## Usage
 
@@ -24,7 +57,7 @@ include_once('FamilySearch.php');
 
 // Create the SDK instance
 $fs = new FamilySearch([
-  'environment' => 'production',
+  'environment' => 'beta', // 'integration', 'beta', or 'production'
   'appKey' => $_ENV['FS_APP_KEY'], // NEVER hardcode credentials - use environment variables
   'redirectUri' => 'https://example.com/fs-redirect',
   
@@ -290,9 +323,9 @@ for serialization from objects for requests and deserialization into objects
 for responses.
 
 ```php
-$fs = new FamilySearch({
+$fs = new FamilySearch([
     'objects' => true
-});
+]);
 
 $response = $fs->post('/platform/tree/persons', [
     'body' => new \Gedcomx\Extensions\FamilySearch\FamilySearchPlatform([
@@ -313,7 +346,7 @@ or later is required.
 
 ## Testing
 
-The SDK includes comprehensive unit and integration tests with **79.89% code coverage**.
+The SDK includes comprehensive unit and integration tests with **76.33% code coverage**.
 
 ### Quick Start
 
@@ -327,7 +360,8 @@ composer test
 # Run only unit tests (fast, ~0.01s)
 composer test:unit
 
-# Run only integration tests (with VCR, ~9s)
+# Run integration tests against live FamilySearch integration API
+# Requires credentials (see below)
 composer test:integration
 
 # Generate code coverage report
@@ -336,31 +370,47 @@ composer test:coverage
 
 ### Test Suite Statistics
 
-- **60 tests** with 123 assertions
-- **79.89% line coverage**, 72.22% method coverage
-- **52 unit tests** - Fast, no HTTP requests
-- **11 integration tests** - Using recorded API responses (php-vcr)
-- **2 skipped tests** - Due to VCR limitations (documented)
+- **102 tests** with 232 assertions
+- **76.33% line coverage**, 50.00% method coverage
+- **74 unit tests** - Fast, no HTTP requests
+- **28 integration tests** - Test against live FamilySearch integration API
 
 ### Test Structure
 
 ```
 tests/
 ├── Unit/                    # 52 tests - SDK logic without HTTP
-├── Integration/             # 11 tests - Full SDK with recorded HTTP
-├── fixtures/                # VCR cassettes (HTTP recordings)
+├── Integration/             # 11 tests - Full SDK against live API
+├── fixtures/                # Test data (person.json)
 └── bootstrap.php            # Test configuration
 ```
+
+### Integration Test Credentials
+
+Integration tests require FamilySearch integration environment credentials. Set these environment variables:
+
+```bash
+export FAMILYSEARCH_USERNAME="your-integration-username"
+export FAMILYSEARCH_PASSWORD="your-integration-password"
+export FAMILYSEARCH_API_KEY="your-api-key"
+export FAMILYSEARCH_REDIRECT_URI="http://example.com/redirect"  # optional
+```
+
+**How to get credentials:**
+1. Visit https://developers.familysearch.org/
+2. Create an account and register an application
+3. Request integration environment access
+4. Use your integration credentials for testing
 
 ### Running Tests on Specific PHP Versions
 
 ```bash
 # Using Docker
-docker run --rm -v $(pwd):/app -w /app php:8.0-cli composer test
+docker run --rm -v $(pwd):/app -w /app php:7.4-cli composer test
 docker run --rm -v $(pwd):/app -w /app php:8.3-cli composer test
 
 # Using phpenv (if installed)
-phpenv local 8.0 && composer test
+phpenv local 7.4 && composer test
 phpenv local 8.3 && composer test
 ```
 
@@ -374,32 +424,14 @@ composer test:coverage
 open coverage/index.html
 ```
 
-### Re-recording VCR Cassettes
-
-VCR cassettes record API responses for fast, deterministic integration tests.
-
-```bash
-# Set credentials (required for re-recording)
-export FAMILYSEARCH_USERNAME="your-sandbox-username"
-export FAMILYSEARCH_PASSWORD="your-sandbox-password"
-export FAMILYSEARCH_API_KEY="your-api-key"
-
-# Delete old cassettes
-rm tests/fixtures/test*.json
-
-# Re-run integration tests (records new cassettes)
-composer test:integration
-```
-
-**Note:** Cassettes should be re-recorded quarterly or when API changes.
-
-See [TESTING.md](TESTING.md) for detailed testing documentation, and [RERECORD_VCR_GUIDE.md](RERECORD_VCR_GUIDE.md) for complete cassette re-recording instructions.
+See [TESTING.md](TESTING.md) for detailed instructions to create testing for your own application.
 
 ## Requirements
 
-- PHP 8.0 or higher
+- PHP 7.4 or higher
 - ext-curl
 - ext-json
+- Composer for dependency management
 
 ## Development
 
@@ -414,24 +446,23 @@ See [TESTING.md](TESTING.md) for detailed testing documentation, and [RERECORD_V
 ### CI/CD
 
 Tests run automatically via GitHub Actions on:
-- **PHP 8.0, 8.1, 8.2, and 8.3** (full matrix)
+- **PHP 7.4, 8.0, 8.1, 8.2, 8.3, and 8.4**
 - **Every push** to master/main branches
 - **Every pull request**
 - **Code coverage** generated for PHP 8.3
 - **Coverage reports** uploaded to Codecov
 
 #### CI Status
-- ✅ All PHP versions passing (8.0-8.3)
-- ✅ 60 tests, 123 assertions
-- ✅ 79.89% code coverage
-- ✅ No deprecation warnings
+- ✅ All PHP versions passing (7.4-8.4)
+- ✅ 102 tests, 232 assertions
+- ✅ 76.33% code coverage (258/338 lines)
 
 See [.github/workflows/tests.yml](.github/workflows/tests.yml) for CI configuration.
 
 ### PHP Version Compatibility
 
-**Minimum:** PHP 8.0  
-**Tested:** PHP 8.0, 8.1, 8.2, 8.3, 8.5  
+**Minimum:** PHP 7.4  
+**Tested:** PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4  
 **Recommended:** PHP 8.2+ for security updates
 
-All tests pass on PHP 8.0-8.5 with zero deprecation warnings.
+All tests pass on PHP 7.4-8.4 with zero deprecation warnings.

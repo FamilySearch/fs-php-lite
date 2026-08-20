@@ -31,8 +31,8 @@ if (empty($appKey)) {
     <ol>
       <li>Copy <code>.env.example</code> to <code>.env</code> in the examples directory</li>
       <li>Get your FamilySearch developer app key from
-          <a href="https://www.familysearch.org/developers/" target="_blank">
-          https://www.familysearch.org/developers/</a></li>
+          <a href="https://developers.familysearch.org/" target="_blank">
+          https://developers.familysearch.org/</a></li>
       <li>Set <code>FS_APP_KEY</code> in your <code>.env</code> file</li>
       <li>Make sure <code>.env</code> is in your <code>.gitignore</code> (NEVER commit credentials!)</li>
     </ol>
@@ -47,10 +47,31 @@ if (empty($appKey)) {
 // Basic configuration (suitable for development/testing)
 // For production, enable encryption (see commented example below)
 $fs = new FamilySearch([
-  'environment' => 'sandbox',
+  'environment' => 'integration',
   'appKey' => $appKey,  // From environment variable (secure)
   'redirectUri' => calculateBaseUrl() . '/examples/oauthResponse.php',
 ]);
+
+// =============================================================================
+// BETA CONFIGURATION (for testing new features)
+// =============================================================================
+// Uncomment and configure for beta deployment:
+//
+// $fs = new FamilySearch([
+//   'environment' => 'beta',  // Use 'beta' environment
+//   'appKey' => $appKey,
+//   'redirectUri' => calculateBaseUrl() . '/examples/oauthResponse.php',
+// ]);
+//
+// Beta environment URLs:
+// - Identity/OAuth: https://identbeta.familysearch.org
+// - Platform API: https://apibeta.familysearch.org
+//
+// Use beta for:
+// - Testing new API features before production release
+// - Pre-release validation of your application
+// - Ensuring compatibility with upcoming changes
+// =============================================================================
 
 // =============================================================================
 // PRODUCTION CONFIGURATION (with encryption enabled)
@@ -90,19 +111,21 @@ $fs = new FamilySearch([
 
 /**
  * Pretty print a PHP variable
- * 
+ *
  * @param mixed $var
  */
-function prettyPrint($var){
+function prettyPrint($var): void
+{
   echo '<pre>', print_r($var, true), '</pre>';
 }
 
 /**
  * Calculate the apps protocol and domain. This allows us to run the app both
  * locally and in Heroku without having to modify the redirect URI.
- * 
+ *
  * @return string
  */
-function calculateBaseUrl(){
+function calculateBaseUrl(): string
+{
   return ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'];
 }

@@ -4,7 +4,7 @@ composer.lock
 coverage
 coverage.xml
 .phpunit.result.cache
-tests/Integration/SandboxCredentials.php
+tests/Integration/IntegrationCredentials.php
 .idea/
 
 # Environment files

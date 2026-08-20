@@ -1,5 +1,15 @@
 # Security Policy
 
+## Supported Versions
+
+- **Minimum:** PHP 7.4
+- **Recommended:** PHP 8.2+ for active security updates and performance improvements
+- **Tested:** PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4
+
+**Note:** PHP versions below 8.1 have reached end-of-life and no longer receive security updates from the PHP team. While this SDK supports PHP 7.4+, we strongly recommend using PHP 8.2 or later in production environments.
+
+---
+
 ## Security Overview
 
 ### What the SDK Provides
@@ -660,7 +670,8 @@ unset FS_SESSION_ENCRYPTION_KEY_OLD
 If you discover a security vulnerability in this SDK, please report it responsibly:
 
 **DO:**
-- ✅ Email security issues privately to: [justincyork@gmail.com](mailto:justincyork@gmail.com)
+- ✅ **SDK Issues:** Email security issues privately to [devsupport@familysearch.org](mailto:devsupport@familysearch.org)
+- ✅ **FamilySearch Platform Issues:** Report through [FamilySearch Developer Support](https://developers.familysearch.org/)
 - ✅ Provide detailed steps to reproduce
 - ✅ Include proof-of-concept code (if applicable)
 - ✅ Give us reasonable time to fix (90 days)
@@ -736,7 +747,7 @@ We aim to:
 - [OWASP PHP Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/PHP_Configuration_Cheat_Sheet.html)
 - [PHP Session Security](https://www.php.net/manual/en/session.security.php)
 - [NIST Cryptographic Standards](https://csrc.nist.gov/publications/detail/sp/800-175b/rev-1/final)
-- [FamilySearch API Documentation](https://www.familysearch.org/developers/docs/api/)
+- [FamilySearch API Documentation](https://developers.familysearch.org/docs/api/)
 
 ### PHP Security Configuration
 

@@ -47,7 +47,6 @@ class SessionEncryptionTest extends TestCase
     {
         $reflection = new ReflectionClass($fs);
         $method = $reflection->getMethod($methodName);
-        $method->setAccessible(true);
         return $method->invoke($fs, ...$args);
     }
 
@@ -58,7 +57,6 @@ class SessionEncryptionTest extends TestCase
     {
         $reflection = new ReflectionClass($fs);
         $property = $reflection->getProperty($propertyName);
-        $property->setAccessible(true);
         return $property->getValue($fs);
     }
 

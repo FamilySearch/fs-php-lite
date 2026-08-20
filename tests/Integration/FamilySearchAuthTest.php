@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace FamilySearch\Tests\Integration;
 
-use VCR\VCR;
-
 /**
- * Integration tests for authentication methods
+ * Integration tests for authentication methods against live integration API
  */
 class FamilySearchAuthTest extends ApiTestCase
 {
@@ -27,23 +25,15 @@ class FamilySearchAuthTest extends ApiTestCase
 
     /**
      * Test isAuthenticated with valid token
-     *
-     * @vcr testIsAuthenticated.json
      */
     public function testIsAuthenticatedWithValidToken(): void
     {
-        VCR::turnOn();
-        VCR::insertCassette('testIsAuthenticated.json');
-
         $this->assertResponseOK($this->login());
 
         // Now check if authenticated
         $isAuth = $this->client->isAuthenticated();
 
         $this->assertTrue($isAuth);
-
-        VCR::eject();
-        VCR::turnOff();
     }
 
     /**
@@ -58,7 +48,6 @@ class FamilySearchAuthTest extends ApiTestCase
         ]);
 
         // With invalid token, API call should fail
-        // We can't use VCR for this as it would require recording a 401
         // Just verify the method exists and returns a boolean
         $this->assertIsBool($client->isAuthenticated());
     }

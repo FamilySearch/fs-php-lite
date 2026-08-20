@@ -856,7 +856,7 @@ class FamilySearch
             case 'beta':
                 return 'https://identbeta.familysearch.org';
             default:
-                return 'https://integration.familysearch.org';
+                return 'https://identint.familysearch.org';
         }
     }
     
@@ -871,7 +871,7 @@ class FamilySearch
             case 'production':
                 return 'https://api.familysearch.org';
             case 'beta':
-                return 'https://beta.familysearch.org';
+                return 'https://apibeta.familysearch.org';
             default:
                 return 'https://api-integ.familysearch.org';
         }

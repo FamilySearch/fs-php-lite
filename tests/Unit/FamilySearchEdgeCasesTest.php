@@ -39,7 +39,7 @@ class FamilySearchEdgeCasesTest extends TestCase
 
         // Should default to integration
         $url = $fs->oauthRedirectURL();
-        $this->assertStringContainsString('integration.familysearch.org', $url);
+        $this->assertStringContainsString('identint.familysearch.org', $url);
     }
 
     public function testConstructorWithEmptyOptions(): void

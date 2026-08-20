@@ -11,15 +11,13 @@
     ],
     "license": "Apache-2.0",
     "require": {
-        "php": ">=8.0",
+        "php": ">=7.4",
         "ext-curl": "*",
         "ext-json": "*"
     },
     "require-dev": {
         "gedcomx/gedcomx-php": "^3.1.2",
-        "php-vcr/php-vcr": "^1.6",
-        "phpunit/phpunit": "^9.5",
-        "php-vcr/phpunit-testlistener-vcr": "^3.0"
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "classmap": ["src/"]
@@ -37,7 +35,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.0.30"
+            "php": "7.4.0"
         }
     }
 }
