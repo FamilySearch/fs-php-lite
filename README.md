@@ -15,6 +15,40 @@ consider URL changes as breaking changes. Read more about
 
 There is a sample app in the `/examples` directory that demonstrates SDK usage.
 
+## Environments
+
+The SDK supports three FamilySearch environments:
+
+### Integration
+Internal testing environment for FamilySearch developers and CI/CD pipelines. Not intended for external developer use.
+- **Identity/OAuth**: `https://identint.familysearch.org`
+- **Platform API**: `https://api-integ.familysearch.org`
+- **Use case**: Internal FamilySearch testing
+
+### Beta
+Pre-production environment for testing upcoming API features and validating application compatibility before changes reach production.
+- **Identity/OAuth**: `https://identbeta.familysearch.org`
+- **Platform API**: `https://apibeta.familysearch.org`
+- **Use case**: External developer pre-release testing
+
+### Production
+Live production environment with real FamilySearch user data.
+- **Identity/OAuth**: `https://ident.familysearch.org`
+- **Platform API**: `https://api.familysearch.org`
+- **Use case**: Live production data
+
+**Example:**
+```php
+// Integration
+$fs = new FamilySearch(['environment' => 'integration']);
+
+// Beta
+$fs = new FamilySearch(['environment' => 'beta']);
+
+// Production
+$fs = new FamilySearch(['environment' => 'production']);
+```
+
 ## Usage
 
 ```php
@@ -23,7 +57,7 @@ include_once('FamilySearch.php');
 
 // Create the SDK instance
 $fs = new FamilySearch([
-  'environment' => 'production',
+  'environment' => 'beta', // 'integration', 'beta', or 'production'
   'appKey' => $_ENV['FS_APP_KEY'], // NEVER hardcode credentials - use environment variables
   'redirectUri' => 'https://example.com/fs-redirect',
   

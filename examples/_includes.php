@@ -53,6 +53,27 @@ $fs = new FamilySearch([
 ]);
 
 // =============================================================================
+// BETA CONFIGURATION (for testing new features)
+// =============================================================================
+// Uncomment and configure for beta deployment:
+//
+// $fs = new FamilySearch([
+//   'environment' => 'beta',  // Use 'beta' environment
+//   'appKey' => $appKey,
+//   'redirectUri' => calculateBaseUrl() . '/examples/oauthResponse.php',
+// ]);
+//
+// Beta environment URLs:
+// - Identity/OAuth: https://identbeta.familysearch.org
+// - Platform API: https://apibeta.familysearch.org
+//
+// Use beta for:
+// - Testing new API features before production release
+// - Pre-release validation of your application
+// - Ensuring compatibility with upcoming changes
+// =============================================================================
+
+// =============================================================================
 // PRODUCTION CONFIGURATION (with encryption enabled)
 // =============================================================================
 // Uncomment and configure for production deployment:

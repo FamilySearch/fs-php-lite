@@ -58,7 +58,7 @@ class FamilySearchHttpMethodsTest extends TestCase
         $environments = [
             'production' => 'ident.familysearch.org',
             'beta' => 'identbeta.familysearch.org',
-            'integration' => 'integration.familysearch.org'
+            'integration' => 'identint.familysearch.org'
         ];
 
         foreach ($environments as $env => $expectedHost) {
