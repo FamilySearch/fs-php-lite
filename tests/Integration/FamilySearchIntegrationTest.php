@@ -114,7 +114,7 @@ class FamilySearchIntegrationTest extends ApiTestCase
         ]);
 
         $this->assertResponseOK($this->login());
-        $response = $this->client->get('https://httpbin.org/user-agent');
+        $response = $this->client->get('/platform/users/current');
 
         $this->assertResponseOK($response);
         $this->assertResponseData($response);
