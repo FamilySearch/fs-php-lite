@@ -308,7 +308,7 @@ sudo cat /var/lib/php/sessions/sess_* | grep FS_ACCESS_TOKEN
    ```
 6. **Regular key rotation** - Rotate encryption keys every 90 days
 
-For comprehensive security guidance, see **[SECURITY.md](SECURITY.md)** which includes:
+For comprehensive security guidance, see **[SECURITY.md](docs/SECURITY.md)** which includes:
 - Detailed threat model
 - Server configuration best practices
 - Key rotation procedures
@@ -509,7 +509,7 @@ composer test:coverage
 open coverage/index.html
 ```
 
-See [TESTING.md](TESTING.md) for detailed instructions to create testing for your own application.
+See [TESTING.md](docs/TESTING.md) for detailed instructions to create testing for your own application.
 
 ## Requirements
 

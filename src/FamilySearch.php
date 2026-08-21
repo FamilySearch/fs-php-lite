@@ -103,7 +103,7 @@ class FamilySearch
      *
      * @var bool
      * @see $sessionEncryptionKey for key requirements
-     * @see SECURITY.md for comprehensive security guidance
+     * @see docs/SECURITY.md for comprehensive security guidance
      */
     private $sessionEncryption = false;
 
@@ -148,7 +148,7 @@ class FamilySearch
      * @var string|null 32-byte encryption key (may be encoded as base64/hex)
      * @see $sessionEncryption to enable encryption
      * @see normalizeEncryptionKey() for key format handling
-     * @see SECURITY.md for key management best practices
+     * @see docs/SECURITY.md for key management best practices
      */
     private $sessionEncryptionKey;
 

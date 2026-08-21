@@ -75,7 +75,7 @@ All notable changes to this project will be documented in this file.
 - PHP 7.4 minimum version support with modern type hints
 - Support for PHP 8.0, 8.1, 8.2, 8.3, and 8.4
 - Return type declarations to helper functions in examples
-- Comprehensive TESTING.md documentation for application testing
+- Comprehensive docs/TESTING.md documentation for application testing
 - GitHub Actions workflow for automated testing across PHP 7.4-8.4
 - Code coverage reporting (76.33% coverage)
 
@@ -106,7 +106,7 @@ All notable changes to this project will be documented in this file.
   - Automatic key normalization supporting base64, hex, and raw binary formats
   - Backward-compatible migration from plaintext to encrypted tokens
   - Fail-secure behavior (encryption failures never fall back to plaintext)
-- Comprehensive SECURITY.md documentation (750+ lines)
+- Comprehensive docs/SECURITY.md documentation (750+ lines)
   - Detailed threat model and security considerations
   - Key generation and storage best practices
   - Server configuration guidelines
