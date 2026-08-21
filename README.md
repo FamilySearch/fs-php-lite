@@ -308,12 +308,87 @@ sudo cat /var/lib/php/sessions/sess_* | grep FS_ACCESS_TOKEN
    ```
 6. **Regular key rotation** - Rotate encryption keys every 90 days
 
-For comprehensive security guidance, see **[SECURITY.md](SECURITY.md)** which includes:
+For comprehensive security guidance, see **[SECURITY.md](docs/SECURITY.md)** which includes:
 - Detailed threat model
 - Server configuration best practices
 - Key rotation procedures
 - Production deployment checklist
 - Incident response guidelines
+
+## Token Expiration Handling
+
+The SDK provides comprehensive token expiration tracking and automatic re-authentication capabilities. FamilySearch access tokens expire based on **two conditions** (whichever comes first):
+
+1. **Absolute Expiration**: 24 hours from token creation
+2. **Inactivity Expiration**: 60 minutes since the last successful API call
+
+The SDK tracks these conditions client-side and offers **three flexible approaches** to handle token expiration:
+
+### 1. Proactive Expiration Checking
+
+Check token expiration **before** making API requests:
+
+```php
+$fs = new FamilySearch([
+    'appKey' => $_ENV['FS_APP_KEY'],
+    'expirationWarningThreshold' => 300 // Warn 5 minutes before expiration
+]);
+
+if ($fs->isTokenExpired()) {
+    // Token is expired or expiring soon - re-authenticate
+    $fs->oauthPassword($username, $password);
+}
+
+$response = $fs->get('/platform/tree/persons/PPPP-PPP');
+```
+
+### 2. Automatic Re-authentication Callback
+
+Configure a callback to handle 401 responses automatically:
+
+```php
+$fs = new FamilySearch([
+    'appKey' => $_ENV['FS_APP_KEY'],
+    'onAuthenticationFailure' => function($response, $reason) use (&$fs, $username, $password) {
+        if ($reason === 'expired') {
+            // Automatically re-authenticate
+            $fs->oauthPassword($username, $password);
+            // SDK automatically retries the original request
+        }
+    }
+]);
+
+// Make requests normally - re-authentication happens transparently
+$response = $fs->get('/platform/tree/persons/PPPP-PPP');
+```
+
+### 3. Enhanced Token Information
+
+Retrieve detailed token metadata for custom handling:
+
+```php
+// Get detailed token information
+$tokenInfo = $fs->getAccessToken(true);
+
+echo "Token expires: " . date('Y-m-d H:i:s', $tokenInfo['expires_at']) . "\n";
+echo "Is expired: " . ($tokenInfo['is_expired'] ? 'Yes' : 'No') . "\n";
+
+// Calculate time remaining
+$timeRemaining = $tokenInfo['expires_at'] - time();
+$minutesRemaining = floor($timeRemaining / 60);
+echo "Time remaining: {$minutesRemaining} minutes\n";
+```
+
+### Additional Features
+
+- **Activity Tracking**: Each successful API call resets the 60-minute inactivity timer
+- **Automatic Request Replay**: Failed requests are transparently retried after successful re-authentication
+- **Backward Compatible**: Existing code continues to work without changes
+- **Configurable Thresholds**: Customize warning thresholds and replay behavior
+
+### Complete Documentation
+
+For detailed documentation including additional examples, configuration options, and request replay behavior, see **[TOKEN_EXPIRATION.md](docs/TOKEN_EXPIRATION.md)**
 
 ## Serialization with gedcomx-php
 
@@ -346,7 +421,7 @@ or later is required.
 
 ## Testing
 
-The SDK includes comprehensive unit and integration tests with **76.33% code coverage**.
+The SDK includes comprehensive unit and integration tests with **77.47% code coverage**.
 
 ### Quick Start
 
@@ -356,6 +431,7 @@ composer install
 
 # Run all tests
 composer test
+# Note: If you encounter verbose Xdebug output, use: XDEBUG_MODE=off composer test
 
 # Run only unit tests (fast, ~0.01s)
 composer test:unit
@@ -370,17 +446,26 @@ composer test:coverage
 
 ### Test Suite Statistics
 
-- **102 tests** with 232 assertions
-- **76.33% line coverage**, 50.00% method coverage
-- **74 unit tests** - Fast, no HTTP requests
-- **28 integration tests** - Test against live FamilySearch integration API
+- **202 tests** with 486 assertions
+- **77.47% line coverage** (368/475 lines), 50.00% method coverage (15/30 methods)
+- **133 unit tests** (244 assertions) - Fast, no HTTP requests
+- **69 integration tests** (242 assertions) - Test against live FamilySearch integration API
 
 ### Test Structure
 
 ```
 tests/
-├── Unit/                    # 52 tests - SDK logic without HTTP
-├── Integration/             # 11 tests - Full SDK against live API
+├── Unit/                    # 133 tests - SDK logic without HTTP
+│   ├── FamilySearchTokenExpirationTest.php    # Token expiration tracking
+│   ├── FamilySearchAuthCallbackTest.php       # Authentication callbacks
+│   ├── FamilySearchRequestReplayTest.php      # Request replay functionality
+│   ├── SessionEncryptionTest.php              # Session encryption
+│   └── ... (other unit tests)
+├── Integration/             # 69 tests - Full SDK against live API
+│   ├── TokenExpirationComprehensiveTest.php   # Token expiration end-to-end
+│   ├── AuthenticationCallbackTest.php         # Callback integration
+│   ├── RequestReplayTest.php                  # Request replay integration
+│   └── ... (other integration tests)
 ├── fixtures/                # Test data (person.json)
 └── bootstrap.php            # Test configuration
 ```
@@ -424,7 +509,7 @@ composer test:coverage
 open coverage/index.html
 ```
 
-See [TESTING.md](TESTING.md) for detailed instructions to create testing for your own application.
+See [TESTING.md](docs/TESTING.md) for detailed instructions to create testing for your own application.
 
 ## Requirements
 
@@ -454,8 +539,8 @@ Tests run automatically via GitHub Actions on:
 
 #### CI Status
 - ✅ All PHP versions passing (7.4-8.4)
-- ✅ 102 tests, 232 assertions
-- ✅ 76.33% code coverage (258/338 lines)
+- ✅ 202 tests, 486 assertions
+- ✅ 77.47% code coverage (368/475 lines)
 
 See [.github/workflows/tests.yml](.github/workflows/tests.yml) for CI configuration.
 

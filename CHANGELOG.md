@@ -2,13 +2,80 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [1.5.0] - 2026-08-21
+
+### Added
+- **Client-side token expiration tracking** for FamilySearch OAuth tokens
+  - New `isTokenExpired()` method returns true/false for token expiration status
+  - New `getTokenExpirationTime()` method returns Unix timestamp when token expires
+  - New `setAccessToken($token, $expiresIn)` method with optional expiration parameter
+  - Enhanced `getAccessToken($detailed)` with optional detailed mode returning array with:
+    - `token`: OAuth access token string
+    - `created`: Unix timestamp when token was created
+    - `last_activity`: Unix timestamp of last successful API call
+    - `expires_at`: Unix timestamp when token will expire
+    - `is_expired`: Boolean indicating if token is expired or expiring soon
+  - New `expirationWarningThreshold` configuration option (default: 300 seconds / 5 minutes)
+  - Automatic activity tracking - updates last activity timestamp on successful API calls
+  - Session format now stores token with metadata (creation time, last activity)
+  - Tracks two expiration conditions:
+    - Absolute expiration: 24 hours from token creation
+    - Inactivity expiration: 60 minutes from last API call
+- **Authentication failure callback system** for handling 401 responses
+  - New `onAuthenticationFailure` configuration option accepts callable/callback
+  - Callback receives response object and failure reason (`'expired'` or `'invalid'`)
+  - Allows automatic re-authentication on token expiration
+  - Supports password grant re-authentication in callback
+  - Supports redirect to login page for authorization code flow
+  - Callback can use `setAccessToken()` or `oauthPassword()` to obtain new token
+  - Backward compatible - callback is optional, existing error handling preserved
+- **Automatic request replay after re-authentication**
+  - New `replayFailedRequestsAfterAuth` configuration option (defaults to `true`)
+  - Automatically retries failed requests after successful re-authentication via callback
+  - Single retry only to prevent infinite loops
+  - Response includes `replayed` flag and `originalResponse` when request was retried
+  - Can be disabled for manual retry handling
+- Comprehensive documentation in `docs/TOKEN_EXPIRATION.md`
+  - Three approaches to token expiration handling
+  - Proactive expiration checking examples
+  - Authentication failure callback patterns
+  - Enhanced token info retrieval examples
+- Complete test coverage for token expiration scenarios
+  - `tests/Unit/FamilySearchTokenExpirationTest.php` - 28 unit tests
+  - `tests/Unit/FamilySearchAuthCallbackTest.php` - 18 unit tests for callback system
+  - `tests/Unit/FamilySearchRequestReplayTest.php` - 17 unit tests for replay functionality
+  - `tests/Integration/AuthenticationCallbackTest.php` - Integration tests
+  - `tests/Integration/RequestReplayTest.php` - Integration tests
+  - `tests/Integration/TokenExpirationComprehensiveTest.php` - End-to-end tests
+
+### Changed
+- Session storage format enhanced with token metadata (backward compatible)
+- Existing sessions auto-migrate to new format with timestamp initialization
+- OAuth response handler now initializes token timestamps
+- Successful API calls (status code < 400, not 401) automatically update last activity
+- Internal token storage includes creation time and last activity tracking
+- Internal request handling enhanced to invoke callback before returning 401 responses
+- Callback exceptions are caught and logged to prevent SDK instability
+- Enhanced internal request handling to support retry logic
+
+### Fixed
+- Token expiration now properly detected before API calls fail
+- 401 responses can be handled gracefully via callback instead of throwing exceptions
+
+### Security
+- Client-side expiration tracking prevents unnecessary 401 errors
+- Proactive re-authentication improves security posture
+- No tokens transmitted for validation - all expiration logic is client-side
+- Transparent recovery from token expiration improves user experience
+- Prevents exposure of 401 errors to end users when tokens can be refreshed
+
+## [1.4.0] - 2026-08-18
 
 ### Added
 - PHP 7.4 minimum version support with modern type hints
 - Support for PHP 8.0, 8.1, 8.2, 8.3, and 8.4
 - Return type declarations to helper functions in examples
-- Comprehensive TESTING.md documentation for application testing
+- Comprehensive docs/TESTING.md documentation for application testing
 - GitHub Actions workflow for automated testing across PHP 7.4-8.4
 - Code coverage reporting (76.33% coverage)
 
@@ -30,7 +97,7 @@ All notable changes to this project will be documented in this file.
 - Clarified that environment variables must be used for credentials (never hardcode)
 - Enhanced security documentation in examples/_includes.php
 
-## [1.3.0] - 2024 (Master Branch - Not Yet Released)
+## [1.3.0] - 2026-08-07
 
 ### Added
 - **Optional AES-256-GCM session token encryption** for production deployments
@@ -39,7 +106,7 @@ All notable changes to this project will be documented in this file.
   - Automatic key normalization supporting base64, hex, and raw binary formats
   - Backward-compatible migration from plaintext to encrypted tokens
   - Fail-secure behavior (encryption failures never fall back to plaintext)
-- Comprehensive SECURITY.md documentation (750+ lines)
+- Comprehensive docs/SECURITY.md documentation (750+ lines)
   - Detailed threat model and security considerations
   - Key generation and storage best practices
   - Server configuration guidelines
@@ -135,8 +202,9 @@ Initial release of FamilySearch PHP Lite SDK.
 
 ## Version History Summary
 
-- **[Unreleased]** - PHP 7.4+ support, terminology updates, enhanced testing
-- **[1.3.0]** - Session encryption, comprehensive security documentation (master branch)
+- **1.5.0** - Token expiration tracking, authentication callbacks, and automatic request replay
+- **1.4.0** - PHP 7.4+ support, terminology updates, enhanced testing
+- **1.3.0** - Session encryption, comprehensive security documentation
 - **1.3.3** - PHP 7 composer fix
 - **1.3.2** - API subdomain updates
 - **1.3.1** - License metadata
@@ -149,56 +217,35 @@ Initial release of FamilySearch PHP Lite SDK.
 
 ## Notes
 
-### Versioning Conflict
-
-There is a version numbering conflict in the repository:
-- Git tag `1.3.0` was used for the gedcomx-php integration (2016)
-- Code constant `VERSION = '1.3.0'` was updated for the encryption feature (2024)
-
-The master branch changes (encryption feature) should be released as **2.0.0** or **1.4.0** to avoid confusion.
-
 ### Migration Guide
 
-#### From 1.3.x to 2.0.0 (Encryption Update)
+#### From 1.3.x to 1.4.0 (PHP Version and Testing Updates)
 
-**No breaking changes** - The encryption feature is opt-in:
+**No breaking changes** - Version 1.4.0 adds support for PHP 7.4-8.4:
 
 ```php
 // Existing code continues to work unchanged
 $fs = new FamilySearch([
     'appKey' => $_ENV['FS_APP_KEY'],
-    'environment' => 'production'
-]);
-
-// Enable encryption (recommended for production)
-$fs = new FamilySearch([
-    'appKey' => $_ENV['FS_APP_KEY'],
-    'environment' => 'production',
-    'sessionEncryption' => true,
-    'sessionEncryptionKey' => $_ENV['FS_SESSION_ENCRYPTION_KEY']
+    'environment' => 'production'  // Use 'integration' for testing
 ]);
 ```
 
-Generate encryption key:
-```bash
-php -r "echo base64_encode(random_bytes(32));"
-```
+**Changes:**
+- PHP 7.4+ is now supported (previously required PHP 8.0+)
+- All "sandbox" references replaced with "integration" terminology
+- Enhanced test suite and documentation
 
-See [SECURITY.md](SECURITY.md) for comprehensive encryption setup guide.
+#### From 1.3.x to 1.5.0 (Token Expiration Features)
+
+**New Configuration Options:**
+- `expirationWarningThreshold` - Seconds before expiration to warn (default: 300)
+- `onAuthenticationFailure` - Callback for handling 401 responses (optional)
+- `replayFailedRequestsAfterAuth` - Auto-retry after re-auth (default: true)
+
+See [docs/TOKEN_EXPIRATION.md](docs/TOKEN_EXPIRATION.md) for comprehensive usage guide.
 
 #### From 1.0.x/1.1.x to 1.2.0+
 
 - Update environment references from `'sandbox'` to `'integration'`
 - Update API endpoint references in documentation
-
----
-
-[Unreleased]: https://github.com/FamilySearch/fs-php-lite/compare/1.3.3...HEAD
-[1.3.0]: https://github.com/FamilySearch/fs-php-lite/compare/1.3.3...master
-[1.3.3]: https://github.com/FamilySearch/fs-php-lite/compare/1.3.2...1.3.3
-[1.3.2]: https://github.com/FamilySearch/fs-php-lite/compare/1.3.1...1.3.2
-[1.3.1]: https://github.com/FamilySearch/fs-php-lite/compare/1.3.0...1.3.1
-[1.3.0]: https://github.com/FamilySearch/fs-php-lite/compare/1.2.0...1.3.0
-[1.2.0]: https://github.com/FamilySearch/fs-php-lite/compare/1.1.0...1.2.0
-[1.1.0]: https://github.com/FamilySearch/fs-php-lite/compare/1.0.0...1.1.0
-[1.0.0]: https://github.com/FamilySearch/fs-php-lite/releases/tag/1.0.0

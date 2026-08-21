@@ -106,7 +106,7 @@ $fs = new FamilySearch([
 // Store in .env file:
 //   FS_ENCRYPTION_KEY=WdaFfj4iL3Epz2o9phaBbh7FyA5fJs3lCcr6YB4QQxo=
 //
-// See SECURITY.md for comprehensive security guidance.
+// See docs/SECURITY.md for comprehensive security guidance.
 // =============================================================================
 
 /**
