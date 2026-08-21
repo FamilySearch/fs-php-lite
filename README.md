@@ -388,17 +388,7 @@ echo "Time remaining: {$minutesRemaining} minutes\n";
 
 ### Complete Documentation
 
-For comprehensive documentation including:
-- FamilySearch token behavior details
-- Complete working examples
-- Migration guide from manual 401 handling
-- Configuration options reference
-- Request replay behavior
-- Activity tracking details
-
-See **[docs/TOKEN_EXPIRATION.md](docs/TOKEN_EXPIRATION.md)**
-
-This feature addresses [Issue #2](https://github.com/FamilySearch/fs-php-lite/issues/2) (opened 2016), which requested automatic token expiration handling and re-authentication support.
+For detailed documentation including additional examples, configuration options, and request replay behavior, see **[TOKEN_EXPIRATION.md](docs/TOKEN_EXPIRATION.md)**
 
 ## Serialization with gedcomx-php
 
