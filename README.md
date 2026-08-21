@@ -421,7 +421,7 @@ or later is required.
 
 ## Testing
 
-The SDK includes comprehensive unit and integration tests with **76.33% code coverage**.
+The SDK includes comprehensive unit and integration tests with **77.47% code coverage**.
 
 ### Quick Start
 
@@ -446,17 +446,26 @@ composer test:coverage
 
 ### Test Suite Statistics
 
-- **102 tests** with 232 assertions
-- **76.33% line coverage**, 50.00% method coverage
-- **74 unit tests** - Fast, no HTTP requests
-- **28 integration tests** - Test against live FamilySearch integration API
+- **202 tests** with 486 assertions
+- **77.47% line coverage** (368/475 lines), 50.00% method coverage (15/30 methods)
+- **133 unit tests** (244 assertions) - Fast, no HTTP requests
+- **69 integration tests** (242 assertions) - Test against live FamilySearch integration API
 
 ### Test Structure
 
 ```
 tests/
-├── Unit/                    # 52 tests - SDK logic without HTTP
-├── Integration/             # 11 tests - Full SDK against live API
+├── Unit/                    # 133 tests - SDK logic without HTTP
+│   ├── FamilySearchTokenExpirationTest.php    # Token expiration tracking
+│   ├── FamilySearchAuthCallbackTest.php       # Authentication callbacks
+│   ├── FamilySearchRequestReplayTest.php      # Request replay functionality
+│   ├── SessionEncryptionTest.php              # Session encryption
+│   └── ... (other unit tests)
+├── Integration/             # 69 tests - Full SDK against live API
+│   ├── TokenExpirationComprehensiveTest.php   # Token expiration end-to-end
+│   ├── AuthenticationCallbackTest.php         # Callback integration
+│   ├── RequestReplayTest.php                  # Request replay integration
+│   └── ... (other integration tests)
 ├── fixtures/                # Test data (person.json)
 └── bootstrap.php            # Test configuration
 ```
@@ -530,8 +539,8 @@ Tests run automatically via GitHub Actions on:
 
 #### CI Status
 - ✅ All PHP versions passing (7.4-8.4)
-- ✅ 102 tests, 232 assertions
-- ✅ 76.33% code coverage (258/338 lines)
+- ✅ 202 tests, 486 assertions
+- ✅ 77.47% code coverage (368/475 lines)
 
 See [.github/workflows/tests.yml](.github/workflows/tests.yml) for CI configuration.
 
