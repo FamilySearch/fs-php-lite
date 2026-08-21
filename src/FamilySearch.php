@@ -9,12 +9,34 @@ class FamilySearch
     /**
      * SDK version number (Semantic Versioning)
      *
+     * Version 1.6.0: Added automatic request replay after re-authentication
+     * - New feature: Automatic retry of failed requests after successful re-authentication
+     * - Configuration option: replayFailedRequestsAfterAuth (default: true)
+     * - Transparent recovery: Failed request automatically retried with new token
+     * - Replay metadata: Response includes 'replayed' flag and 'originalResponse'
+     * - Single retry only: Prevents infinite loops
+     * - Backward compatible: Can be disabled, existing behavior preserved
+     *
+     * Version 1.5.0: Added authentication failure callback system
+     * - New feature: onAuthenticationFailure callback for handling 401 responses
+     * - Callback receives response object and reason ('expired' or 'invalid')
+     * - Allows automatic re-authentication on token expiration
+     * - Backward compatible: callback is optional, existing error handling preserved
+     *
+     * Version 1.4.0: Added token expiration tracking functionality
+     * - New feature: Client-side token expiration tracking (24hr absolute, 60min inactivity)
+     * - New methods: isTokenExpired(), getTokenExpirationTime(), setAccessToken()
+     * - Enhanced: getAccessToken() now supports detailed mode with expiration info
+     * - Session format: Now stores token with metadata (creation time, last activity)
+     * - Backward compatible: Existing sessions auto-migrate to new format
+     * - Activity tracking: Automatically updates last activity on successful API calls
+     *
      * Version 1.3.0: Added optional AES-256-GCM session token encryption
      * - New feature: sessionEncryption and sessionEncryptionKey configuration options
      * - Backward compatible: encryption defaults to disabled (no breaking changes)
      * - Security enhancement: protects OAuth tokens from filesystem disclosure
      */
-    const VERSION = '1.3.0';
+    const VERSION = '1.6.0';
     
     /**
      * The FamilySearch reference or environment to target. Valid values are
@@ -136,10 +158,118 @@ class FamilySearch
      * @var string
      */
     private $accessToken;
-    
+
+    /**
+     * Unix timestamp when the access token was created/issued.
+     * Used to calculate absolute expiration (24 hours from creation).
+     *
+     * @var int|null
+     */
+    private $tokenCreationTime;
+
+    /**
+     * Unix timestamp of the last successful API call.
+     * Used to calculate inactivity expiration (60 minutes from last activity).
+     * Updated on every successful API response (statusCode < 400, not 401).
+     *
+     * @var int|null
+     */
+    private $tokenLastActivityTime;
+
+    /**
+     * Threshold in seconds before expiration to warn that token is expiring soon.
+     * Default: 300 seconds (5 minutes).
+     *
+     * When the token is within this threshold of expiration, applications can
+     * proactively refresh or re-authenticate before the token expires.
+     *
+     * @var int
+     */
+    private $expirationWarningThreshold = 300;
+
+    /**
+     * Callback function invoked when authentication fails (401 response).
+     *
+     * This callback allows applications to handle authentication failures gracefully
+     * by re-authenticating the user and obtaining a new access token. The callback
+     * is invoked before any exception handling, giving the application full control
+     * over the authentication flow.
+     *
+     * Callback Signature:
+     * function(object $response, string $reason): void
+     *
+     * Parameters:
+     * - $response: The HTTP response object with statusCode 401
+     * - $reason: 'expired' if isTokenExpired() returns true, 'invalid' otherwise
+     *
+     * FamilySearch Token Characteristics:
+     * - No refresh tokens available - must re-authenticate to get new token
+     * - 401 responses don't distinguish between expired vs invalid tokens
+     * - SDK determines reason client-side using token expiration tracking
+     *
+     * Re-authentication Options in Callback:
+     * 1. Password grant: $this->oauthPassword($username, $password)
+     * 2. Authorization code: Redirect user to $this->oauthRedirectURL()
+     * 3. Unauthenticated session: Request new unauthenticated token
+     * 4. Custom storage: Load token from database/cache using $this->setAccessToken()
+     *
+     * Example Usage:
+     * ```php
+     * $fs = new FamilySearch([
+     *     'onAuthenticationFailure' => function($response, $reason) use ($username, $password) {
+     *         if ($reason === 'expired') {
+     *             error_log('Token expired, re-authenticating...');
+     *             $this->oauthPassword($username, $password);
+     *         } else {
+     *             error_log('Authentication invalid, redirecting to login...');
+     *             header('Location: /login');
+     *             exit;
+     *         }
+     *     }
+     * ]);
+     * ```
+     *
+     * @var callable|null
+     */
+    private $onAuthenticationFailure;
+
+    /**
+     * Whether to automatically replay failed requests after successful re-authentication.
+     *
+     * When enabled (default), if the onAuthenticationFailure callback obtains a new
+     * access token (by calling setAccessToken() or oauthPassword()), the SDK will
+     * automatically retry the original request that failed with 401.
+     *
+     * This provides transparent recovery from token expiration:
+     * 1. Original request fails with 401
+     * 2. Callback re-authenticates and gets new token
+     * 3. SDK automatically retries the original request
+     * 4. User gets successful response without manual intervention
+     *
+     * Replay is performed only once to prevent infinite loops. If the retry also
+     * fails with 401, no further retries are attempted.
+     *
+     * Set to false to disable automatic replay and handle retries manually in the
+     * application code.
+     *
+     * @var bool
+     */
+    private $replayFailedRequestsAfterAuth = true;
+
+    /**
+     * Flag tracking whether current request is a retry after authentication failure.
+     *
+     * This prevents infinite retry loops by ensuring we only retry once. When a
+     * request is being retried after successful re-authentication, this flag is
+     * set to true. If the retry also fails with 401, we don't retry again.
+     *
+     * @var bool
+     */
+    private $isRetryRequest = false;
+
     /**
      * Maximum number of times to retry when being throttled
-     * 
+     *
      * @var integer
      */
     private $maxThrottledRetries = 5;
@@ -183,6 +313,14 @@ class FamilySearch
      *                                                 Generate secure key: base64_encode(random_bytes(32))
      * @param string $options['accessToken'] Manually provide access token (bypasses session storage)
      * @param int $options['maxThrottledRetries'] Maximum retry attempts for throttled requests (default: 5)
+     * @param int $options['expirationWarningThreshold'] Seconds before expiration to warn token is expiring (default: 300)
+     * @param callable $options['onAuthenticationFailure'] Callback invoked on 401 responses: function($response, $reason)
+     *                                                      - $reason is 'expired' or 'invalid' based on client-side tracking
+     *                                                      - Callback can re-authenticate and call setAccessToken() with new token
+     * @param bool $options['replayFailedRequestsAfterAuth'] Auto-retry failed requests after re-authentication (default: true)
+     *                                                         - If callback obtains new token, automatically retry the original request
+     *                                                         - Only retries once to prevent infinite loops
+     *                                                         - Set to false to disable automatic replay
      * @param array $options['pendingModifications'] Array of pending modification feature flags
      * @param string $options['userAgent'] Additional user agent string to append to default
      * @param bool $options['objects'] Enable gedcomx-php object serialization/deserialization (default: false)
@@ -293,7 +431,20 @@ class FamilySearch
                     try {
                         $decrypted = $this->decryptToken($sessionValue);
                         if ($decrypted !== false) {
-                            $this->accessToken = $decrypted;
+                            // Decrypt succeeded - extract token and metadata
+                            $metadata = $this->deserializeTokenMetadata($decrypted);
+                            if ($metadata !== false) {
+                                $this->accessToken = $metadata['token'];
+                                $this->tokenCreationTime = $metadata['created'];
+                                $this->tokenLastActivityTime = $metadata['last_activity'];
+
+                                // Backward compatibility: Initialize timestamps if null (old session format)
+                                if ($this->tokenCreationTime === null || $this->tokenLastActivityTime === null) {
+                                    $now = time();
+                                    $this->tokenCreationTime = $this->tokenCreationTime ?? $now;
+                                    $this->tokenLastActivityTime = $this->tokenLastActivityTime ?? $now;
+                                }
+                            }
                         } else {
                             // SECURITY FAILURE: Decryption returned false
                             // Possible causes:
@@ -344,6 +495,22 @@ class FamilySearch
                 // =============================================================
                 // SCENARIO 3 & 4: Token appears to be plaintext
                 // =============================================================
+                // Extract token and metadata from plaintext session value
+                $metadata = $this->deserializeTokenMetadata($sessionValue);
+                if ($metadata !== false) {
+                    $this->accessToken = $metadata['token'];
+                    $this->tokenCreationTime = $metadata['created'];
+                    $this->tokenLastActivityTime = $metadata['last_activity'];
+
+                    // Backward compatibility: Initialize timestamps if null (old session format)
+                    if ($this->tokenCreationTime === null || $this->tokenLastActivityTime === null) {
+                        $now = time();
+                        $this->tokenCreationTime = $this->tokenCreationTime ?? $now;
+                        $this->tokenLastActivityTime = $this->tokenLastActivityTime ?? $now;
+                    }
+                }
+
+                // Apply encryption/no-encryption policy
                 if ($this->sessionEncryption) {
                     // SCENARIO 3: Encryption enabled + plaintext token (MIGRATION)
                     // User enabled encryption but session contains plaintext token
@@ -352,12 +519,12 @@ class FamilySearch
                     // MIGRATION STRATEGY: Accept plaintext token temporarily
                     // On next OAuth response, token will be encrypted automatically
                     // This provides zero-downtime migration without forcing logout
-                    $this->accessToken = $sessionValue;
+                    // (Token already loaded above)
                 } else {
                     // SCENARIO 4: Encryption disabled + plaintext token (LEGACY)
                     // This is normal legacy operation before encryption was enabled
                     // Token is stored in plaintext in session (not recommended for production)
-                    $this->accessToken = $sessionValue;
+                    // (Token already loaded above)
                 }
             }
         }
@@ -365,11 +532,29 @@ class FamilySearch
         if (isset($options['accessToken'])) {
             $this->accessToken = $options['accessToken'];
         }
-        
+
         if (isset($options['maxThrottledRetries'])) {
             $this->maxThrottledRetries = $options['maxThrottledRetries'];
         }
-        
+
+        if (isset($options['expirationWarningThreshold']) && is_int($options['expirationWarningThreshold'])) {
+            $this->expirationWarningThreshold = $options['expirationWarningThreshold'];
+        }
+
+        if (isset($options['onAuthenticationFailure'])) {
+            if (is_callable($options['onAuthenticationFailure'])) {
+                $this->onAuthenticationFailure = $options['onAuthenticationFailure'];
+            } else {
+                throw new \InvalidArgumentException(
+                    'onAuthenticationFailure must be a callable (function, closure, or array with object and method)'
+                );
+            }
+        }
+
+        if (isset($options['replayFailedRequestsAfterAuth']) && is_bool($options['replayFailedRequestsAfterAuth'])) {
+            $this->replayFailedRequestsAfterAuth = $options['replayFailedRequestsAfterAuth'];
+        }
+
         if (isset($options['objects']) && is_bool($options['objects'])) {
             $this->objects = $options['objects'];
         }
@@ -466,20 +651,39 @@ class FamilySearch
             $this->accessToken = $response->data['access_token'];
 
             // ================================================================
+            // Initialize Token Timestamps for Expiration Tracking
+            // ================================================================
+            // FamilySearch tokens expire after:
+            // - 24 hours from creation (absolute expiration), OR
+            // - 60 minutes of inactivity (inactivity expiration)
+            // Since FamilySearch OAuth response doesn't include expires_in,
+            // we track these timestamps client-side
+            $now = time();
+            $this->tokenCreationTime = $now;
+            $this->tokenLastActivityTime = $now;
+
+            // ================================================================
             // Session Token Storage with Optional Encryption
             // ================================================================
             if ($this->sessions) {
+                // Serialize token with metadata (creation time, last activity)
+                $tokenMetadata = $this->serializeTokenMetadata(
+                    $this->accessToken,
+                    $this->tokenCreationTime,
+                    $this->tokenLastActivityTime
+                );
+
                 if ($this->sessionEncryption) {
                     // ========================================================
                     // SECURE PATH: Encryption enabled - encrypt before storing
                     // ========================================================
                     try {
-                        // Encrypt the access token using AES-256-GCM authenticated encryption
+                        // Encrypt the token metadata using AES-256-GCM authenticated encryption
                         // Format: base64(iv):base64(tag):base64(ciphertext)
                         // - IV (12 bytes): Unique random initialization vector
                         // - Tag (16 bytes): Authentication tag for tamper detection
-                        // - Ciphertext: Encrypted token data
-                        $encryptedToken = $this->encryptToken($this->accessToken);
+                        // - Ciphertext: Encrypted token data with metadata
+                        $encryptedToken = $this->encryptToken($tokenMetadata);
                         $_SESSION[$this->sessionVariable] = $encryptedToken;
                     } catch (\Exception $e) {
                         // ====================================================
@@ -508,7 +712,7 @@ class FamilySearch
                     // ========================================================
                     // This is the legacy behavior before encryption was implemented
                     // NOT RECOMMENDED for production environments
-                    $_SESSION[$this->sessionVariable] = $this->accessToken;
+                    $_SESSION[$this->sessionVariable] = $tokenMetadata;
                 }
             }
         }
@@ -516,13 +720,205 @@ class FamilySearch
     }
     
     /**
-     * Get the access token, if it exists.
-     * 
-     * @return string access token
+     * Get the access token, optionally with detailed expiration information.
+     *
+     * Backward Compatibility:
+     * - When called without parameters: Returns token string (backward compatible)
+     * - When called with $detailed = true: Returns array with token and expiration info
+     *
+     * Detailed Format (when $detailed = true):
+     * [
+     *   'token' => string,              // OAuth access token
+     *   'created' => int|null,          // Unix timestamp when token was created
+     *   'last_activity' => int|null,    // Unix timestamp of last successful API call
+     *   'expires_at' => int|null,       // Unix timestamp when token will expire
+     *   'is_expired' => bool            // Whether token is expired or expiring soon
+     * ]
+     *
+     * @param bool $detailed If true, return array with expiration info; if false, return token string
+     * @return string|array|null Token string, detailed array, or null if no token
      */
-    public function getAccessToken()
+    public function getAccessToken($detailed = false)
     {
+        if ($detailed) {
+            // Return detailed information
+            return [
+                'token' => $this->accessToken,
+                'created' => $this->tokenCreationTime,
+                'last_activity' => $this->tokenLastActivityTime,
+                'expires_at' => $this->getTokenExpirationTime(),
+                'is_expired' => $this->isTokenExpired()
+            ];
+        }
+
+        // Backward compatible: return just the token string
         return $this->accessToken;
+    }
+
+    /**
+     * Check if the access token is expired or expiring soon.
+     *
+     * FamilySearch access tokens expire under two conditions (whichever comes first):
+     * 1. Absolute expiration: 24 hours after token creation
+     * 2. Inactivity expiration: 60 minutes since last successful API call
+     *
+     * This method returns true if:
+     * - No token is present
+     * - Token has expired (either condition met)
+     * - Token will expire within the warning threshold (default: 5 minutes)
+     *
+     * Token Expiration Rules (FamilySearch Platform):
+     * - Maximum lifetime: 24 hours from issuance
+     * - Inactivity timeout: 60 minutes since last API call
+     * - Each successful API call resets the 60-minute inactivity timer
+     * - No refresh tokens available - must re-authenticate when expired
+     *
+     * Warning Threshold:
+     * By default, returns true when token is within 5 minutes of expiration.
+     * This allows applications to proactively re-authenticate before token expires.
+     * Configure via 'expirationWarningThreshold' option (in seconds).
+     *
+     * @return bool True if token is expired or expiring soon, false otherwise
+     */
+    public function isTokenExpired()
+    {
+        // No token present
+        if (empty($this->accessToken)) {
+            return true;
+        }
+
+        // No timestamp information (shouldn't happen with new code, but handle gracefully)
+        if ($this->tokenCreationTime === null || $this->tokenLastActivityTime === null) {
+            return false; // Assume valid if we have a token but no timestamp data
+        }
+
+        $now = time();
+        $expirationTime = $this->getTokenExpirationTime();
+
+        // Token is expired or within warning threshold
+        return ($now + $this->expirationWarningThreshold) >= $expirationTime;
+    }
+
+    /**
+     * Get the Unix timestamp when the access token will expire.
+     *
+     * FamilySearch tokens expire based on the EARLIER of:
+     * 1. Absolute expiration: 24 hours (86400 seconds) from token creation
+     * 2. Inactivity expiration: 60 minutes (3600 seconds) from last activity
+     *
+     * This method calculates both expiration times and returns the sooner one,
+     * which represents when the token will actually expire.
+     *
+     * Token Lifecycle:
+     * - Created at timestamp T
+     * - Absolute expiration: T + 86400 seconds
+     * - Last activity at timestamp A
+     * - Inactivity expiration: A + 3600 seconds
+     * - Actual expiration: min(T + 86400, A + 3600)
+     *
+     * Returns null if:
+     * - No token is present
+     * - Token timestamp information is not available
+     *
+     * @return int|null Unix timestamp when token expires, or null if no token/timestamp data
+     */
+    public function getTokenExpirationTime()
+    {
+        // No token present
+        if (empty($this->accessToken)) {
+            return null;
+        }
+
+        // No timestamp information
+        if ($this->tokenCreationTime === null || $this->tokenLastActivityTime === null) {
+            return null;
+        }
+
+        // Calculate both expiration conditions
+        $absoluteExpiration = $this->tokenCreationTime + 86400;  // 24 hours from creation
+        $inactivityExpiration = $this->tokenLastActivityTime + 3600;  // 60 minutes from last activity
+
+        // Return the sooner of the two (whichever comes first)
+        return min($absoluteExpiration, $inactivityExpiration);
+    }
+
+    /**
+     * Set the access token manually with optional expiration time.
+     *
+     * This method allows applications to manually set an access token, which is useful for:
+     * - Restoring tokens from custom storage (database, Redis, etc.)
+     * - Testing and development
+     * - Custom authentication flows
+     * - Re-authentication in onAuthenticationFailure callback
+     *
+     * Token Expiration Behavior:
+     * - If $expiresIn is null (default): Token is treated as freshly issued
+     *   - Creation time set to now
+     *   - Last activity set to now
+     *   - Token will expire in 24 hours or after 60 minutes of inactivity
+     *
+     * - If $expiresIn is provided: Used for backward compatibility
+     *   - Creation time calculated as: now - (86400 - $expiresIn)
+     *   - Last activity set to now
+     *   - Allows restoring tokens with remaining lifetime
+     *
+     * The token is stored in memory and optionally persisted to session storage
+     * (with encryption if enabled).
+     *
+     * Automatic Request Replay:
+     * If this method is called during an onAuthenticationFailure callback, it signals
+     * that the callback successfully obtained a new token. If replayFailedRequestsAfterAuth
+     * is enabled (default), the SDK will automatically retry the original failed request
+     * with the new token.
+     *
+     * @param string $token OAuth access token to set
+     * @param int|null $expiresIn Optional: seconds until token expires (null = treat as new token)
+     * @return void
+     */
+    public function setAccessToken($token, $expiresIn = null)
+    {
+        $this->accessToken = $token;
+        $now = time();
+
+        if ($expiresIn === null) {
+            // Treat as freshly issued token
+            $this->tokenCreationTime = $now;
+            $this->tokenLastActivityTime = $now;
+        } else {
+            // Calculate creation time based on remaining lifetime
+            // If token has X seconds left, it was created (24 hours - X seconds) ago
+            $this->tokenCreationTime = $now - (86400 - $expiresIn);
+            $this->tokenLastActivityTime = $now;
+        }
+
+        // Store in session if sessions are enabled
+        if ($this->sessions) {
+            // Serialize token with metadata
+            $tokenMetadata = $this->serializeTokenMetadata(
+                $this->accessToken,
+                $this->tokenCreationTime,
+                $this->tokenLastActivityTime
+            );
+
+            if ($this->sessionEncryption) {
+                // Encrypt before storing
+                try {
+                    $encryptedToken = $this->encryptToken($tokenMetadata);
+                    $_SESSION[$this->sessionVariable] = $encryptedToken;
+                } catch (\Exception $e) {
+                    // Encryption failed - clear session
+                    unset($_SESSION[$this->sessionVariable]);
+                    trigger_error(
+                        'Failed to encrypt session token: ' . $e->getMessage() . '. ' .
+                        'Token not stored in session (available for current request only).',
+                        E_USER_WARNING
+                    );
+                }
+            } else {
+                // Store plaintext
+                $_SESSION[$this->sessionVariable] = $tokenMetadata;
+            }
+        }
     }
     
     /**
@@ -756,20 +1152,20 @@ class FamilySearch
             if (isset($response->headers['content-type']) && strpos($response->headers['content-type'], 'json') !== false) {
                 try {
                     $response->data = json_decode($response->body, true);
-                    
+
                     // Instantiate objects via gedcomx-php when configured
                     if ($response->data && $this->objects){
-                        
+
                         // Atom Feed
                         if (isset($response->data['entries'])){
                             $response->gedcomx = new \Gedcomx\Atom\Feed($response->data);
-                        } 
-                        
+                        }
+
                         // OAuth token success response
                         else if (isset($response->data['access_token']) || isset($response->data['error'])) {
                             $response->gedcomx = new \Gedcomx\Extensions\FamilySearch\OAuth2($response->data);
-                        } 
-                        
+                        }
+
                         // GedcomX
                         else {
                             $response->gedcomx = new \Gedcomx\Extensions\FamilySearch\FamilySearchPlatform($response->data);
@@ -777,7 +1173,126 @@ class FamilySearch
                     }
                 } catch (Exception $e) { }
             }
-            
+
+            // ================================================================
+            // Authentication Failure Callback (401 Responses)
+            // ================================================================
+            // FamilySearch returns 401 when:
+            // - Token has expired (24 hours OR 60 minutes of inactivity)
+            // - Token is invalid or revoked
+            // - No token was provided for a protected endpoint
+            //
+            // The API does not distinguish between these cases in the response,
+            // so we use client-side token tracking to determine the likely reason.
+            //
+            // If onAuthenticationFailure callback is configured, invoke it before
+            // returning the response. This allows applications to:
+            // - Re-authenticate automatically (password grant)
+            // - Redirect user to login page (authorization code flow)
+            // - Load token from alternative storage
+            // - Log authentication failures for monitoring
+            //
+            // The callback receives:
+            // - $response: Full response object with statusCode 401
+            // - $reason: 'expired' if token tracking indicates expiration, 'invalid' otherwise
+            //
+            // After callback execution, if the callback obtained a new token (by calling
+            // setAccessToken() or oauthPassword()) and automatic replay is enabled, the SDK
+            // will retry the original request once with the new token.
+            if ($response->statusCode === 401 && $this->onAuthenticationFailure !== null && !$this->isRetryRequest) {
+                // Determine failure reason based on client-side token tracking
+                // Note: FamilySearch API doesn't distinguish, so this is our best guess
+                $reason = $this->isTokenExpired() ? 'expired' : 'invalid';
+
+                // ============================================================
+                // Invoke Authentication Failure Callback
+                // ============================================================
+                // Capture the token before callback execution
+                $tokenBeforeCallback = $this->accessToken;
+
+                try {
+                    // Invoke the callback with response and reason
+                    // Callback may:
+                    // - Call oauthPassword() to re-authenticate
+                    // - Call setAccessToken() with a cached/stored token
+                    // - Redirect user to login page
+                    // - Log the failure for monitoring
+                    call_user_func($this->onAuthenticationFailure, $response, $reason);
+                } catch (\Exception $e) {
+                    // Callback threw exception - log it but don't break request flow
+                    // This ensures SDK remains stable even if callback has bugs
+                    trigger_error(
+                        'onAuthenticationFailure callback threw exception: ' . $e->getMessage(),
+                        E_USER_WARNING
+                    );
+                }
+
+                // Check if token changed during callback execution
+                // This works for both setAccessToken() and oauthPassword() methods
+                $tokenChanged = ($this->accessToken !== $tokenBeforeCallback && $this->accessToken !== null);
+
+                // ============================================================
+                // Automatic Request Replay After Successful Re-authentication
+                // ============================================================
+                // If the callback obtained a new token and replay is enabled,
+                // automatically retry the original request with the new token.
+                //
+                // Conditions for replay:
+                // 1. Token changed during callback (different from before)
+                // 2. Automatic replay is enabled (replayFailedRequestsAfterAuth = true)
+                // 3. This is not already a retry (prevents infinite loops)
+                //
+                // Benefits:
+                // - Transparent recovery from token expiration
+                // - User gets successful response without manual intervention
+                // - Application doesn't need to handle retries manually
+                if ($tokenChanged && $this->replayFailedRequestsAfterAuth) {
+                    // Mark this as a retry request to prevent infinite loops
+                    $this->isRetryRequest = true;
+
+                    try {
+                        // Update the Authorization header with the new token
+                        // The options may still have the old token in the Authorization header
+                        // from the original request, so we need to update it
+                        if ($this->getAccessToken()) {
+                            $options['headers']['Authorization'] = 'Bearer ' . $this->getAccessToken();
+                        }
+
+                        // Retry the original request with the new token
+                        // The new token is already set in $this->accessToken and has been
+                        // updated in the Authorization header above
+                        $replayResponse = $this->request($url, $options);
+
+                        // Mark that this response came from a replay
+                        $replayResponse->replayed = true;
+                        $replayResponse->originalResponse = $response;
+
+                        // Return the replay response instead of the original 401
+                        return $replayResponse;
+                    } finally {
+                        // Always reset the retry flag after replay attempt
+                        $this->isRetryRequest = false;
+                    }
+                }
+            }
+
+            // ================================================================
+            // Update Last Activity Timestamp for Token Expiration Tracking
+            // ================================================================
+            // FamilySearch tokens expire after 60 minutes of inactivity.
+            // Each successful API call resets this 60-minute timer.
+            // Update last activity timestamp only for successful responses.
+            //
+            // Success criteria:
+            // - Status code < 400 (2xx or 3xx responses)
+            // - Status code is not 401 (not an authentication failure)
+            //
+            // Note: 401 responses indicate expired or invalid token, so we
+            // should NOT update last activity in that case.
+            if ($response->statusCode < 400 && $response->statusCode !== 401) {
+                $this->updateLastActivity();
+            }
+
             return $response;
         } else {
             throw new Exception(curl_errno($request).' - '.curl_error($request));
@@ -1312,6 +1827,136 @@ class FamilySearch
 
         // Success: Return plaintext token
         return $plaintext;
+    }
+
+    /**
+     * Update the last activity timestamp for token expiration tracking.
+     *
+     * This method is called after every successful API request to reset the
+     * 60-minute inactivity timer. FamilySearch tokens expire after 60 minutes
+     * of inactivity, so updating this timestamp on each API call keeps the
+     * token alive (up to the 24-hour absolute maximum).
+     *
+     * Updates:
+     * - In-memory last activity timestamp
+     * - Session storage (with encryption if enabled)
+     *
+     * This method only updates if:
+     * - A token is present
+     * - Token has timestamp information
+     * - Sessions are enabled
+     *
+     * @return void
+     */
+    private function updateLastActivity()
+    {
+        // Only update if we have a token with timestamp information
+        if (empty($this->accessToken) || $this->tokenCreationTime === null) {
+            return;
+        }
+
+        // Update in-memory timestamp
+        $this->tokenLastActivityTime = time();
+
+        // Persist to session if sessions are enabled
+        if ($this->sessions) {
+            // Serialize token with updated metadata
+            $tokenMetadata = $this->serializeTokenMetadata(
+                $this->accessToken,
+                $this->tokenCreationTime,
+                $this->tokenLastActivityTime
+            );
+
+            if ($this->sessionEncryption) {
+                // Encrypt before storing
+                try {
+                    $encryptedToken = $this->encryptToken($tokenMetadata);
+                    $_SESSION[$this->sessionVariable] = $encryptedToken;
+                } catch (\Exception $e) {
+                    // Encryption failed - log warning but don't clear session
+                    // Token remains valid in memory for current request
+                    trigger_error(
+                        'Failed to update encrypted session token: ' . $e->getMessage(),
+                        E_USER_WARNING
+                    );
+                }
+            } else {
+                // Store plaintext
+                $_SESSION[$this->sessionVariable] = $tokenMetadata;
+            }
+        }
+    }
+
+    /**
+     * Serialize token metadata for session storage.
+     *
+     * Creates a JSON-encoded string containing the token and its metadata (creation time
+     * and last activity timestamp). This format allows us to track token expiration while
+     * maintaining all token information in a single session variable.
+     *
+     * Format: JSON object with keys:
+     * - token: The OAuth access token string
+     * - created: Unix timestamp when token was issued
+     * - last_activity: Unix timestamp of last successful API call
+     *
+     * @param string $token OAuth access token
+     * @param int $createdTime Unix timestamp when token was created
+     * @param int $lastActivityTime Unix timestamp of last successful API call
+     * @return string JSON-encoded token metadata
+     */
+    private function serializeTokenMetadata($token, $createdTime, $lastActivityTime)
+    {
+        return json_encode([
+            'token' => $token,
+            'created' => $createdTime,
+            'last_activity' => $lastActivityTime
+        ]);
+    }
+
+    /**
+     * Deserialize token metadata from session storage.
+     *
+     * Parses the JSON-encoded token metadata stored in the session. This method handles
+     * backward compatibility by detecting whether the session value is:
+     * 1. New format: JSON object with token metadata
+     * 2. Old format: Plain token string (for backward compatibility)
+     *
+     * Backward Compatibility:
+     * - If session contains plain token string, returns array with token and null timestamps
+     * - Caller should handle null timestamps by initializing them to current time
+     *
+     * @param string $serialized Session value (JSON metadata or plain token string)
+     * @return array|false Array with keys [token, created, last_activity] or false on failure
+     *                     - token: OAuth access token string
+     *                     - created: Unix timestamp or null (for old format)
+     *                     - last_activity: Unix timestamp or null (for old format)
+     */
+    private function deserializeTokenMetadata($serialized)
+    {
+        // Attempt to decode as JSON (new format)
+        $data = json_decode($serialized, true);
+
+        if (is_array($data) && isset($data['token'])) {
+            // New format with metadata
+            return [
+                'token' => $data['token'],
+                'created' => $data['created'] ?? null,
+                'last_activity' => $data['last_activity'] ?? null
+            ];
+        }
+
+        // Old format: plain token string (backward compatibility)
+        // Return with null timestamps - caller should initialize them
+        if (is_string($serialized) && !empty($serialized)) {
+            return [
+                'token' => $serialized,
+                'created' => null,
+                'last_activity' => null
+            ];
+        }
+
+        // Invalid format
+        return false;
     }
 
 }

@@ -125,9 +125,12 @@ class EncryptedSessionFlowTest extends TestCase
         // Verify response
         $this->assertEquals(200, $response->statusCode);
 
-        // Verify token is stored in session as plaintext
+        // Verify token is stored in session as unencrypted JSON with metadata
         $this->assertArrayHasKey('FS_ACCESS_TOKEN', $_SESSION);
-        $this->assertEquals($this->testToken, $_SESSION['FS_ACCESS_TOKEN'], 'Token should be stored as plaintext');
+        $sessionData = json_decode($_SESSION['FS_ACCESS_TOKEN'], true);
+        $this->assertIsArray($sessionData, 'Session should contain JSON metadata');
+        $this->assertArrayHasKey('token', $sessionData);
+        $this->assertEquals($this->testToken, $sessionData['token'], 'Token should be stored in metadata');
     }
 
     public function testTokenPersistsAcrossRequestsWhenPlaintext(): void
@@ -354,9 +357,12 @@ class EncryptedSessionFlowTest extends TestCase
 
         $this->simulateOAuthResponse($fs, $this->testToken);
 
-        // Verify token is stored in custom variable as plaintext
+        // Verify token is stored in custom variable as plaintext (with metadata)
         $this->assertArrayHasKey($customVar, $_SESSION);
-        $this->assertEquals($this->testToken, $_SESSION[$customVar], 'Token should be plaintext in custom variable');
+        $sessionData = json_decode($_SESSION[$customVar], true);
+        $this->assertIsArray($sessionData, 'Session should contain JSON metadata');
+        $this->assertArrayHasKey('token', $sessionData);
+        $this->assertEquals($this->testToken, $sessionData['token'], 'Token should be stored in metadata');
 
         // Clean up
         unset($_SESSION[$customVar]);

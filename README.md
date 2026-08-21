@@ -315,6 +315,91 @@ For comprehensive security guidance, see **[SECURITY.md](SECURITY.md)** which in
 - Production deployment checklist
 - Incident response guidelines
 
+## Token Expiration Handling
+
+The SDK provides comprehensive token expiration tracking and automatic re-authentication capabilities. FamilySearch access tokens expire based on **two conditions** (whichever comes first):
+
+1. **Absolute Expiration**: 24 hours from token creation
+2. **Inactivity Expiration**: 60 minutes since the last successful API call
+
+The SDK tracks these conditions client-side and offers **three flexible approaches** to handle token expiration:
+
+### 1. Proactive Expiration Checking
+
+Check token expiration **before** making API requests:
+
+```php
+$fs = new FamilySearch([
+    'appKey' => $_ENV['FS_APP_KEY'],
+    'expirationWarningThreshold' => 300 // Warn 5 minutes before expiration
+]);
+
+if ($fs->isTokenExpired()) {
+    // Token is expired or expiring soon - re-authenticate
+    $fs->oauthPassword($username, $password);
+}
+
+$response = $fs->get('/platform/tree/persons/PPPP-PPP');
+```
+
+### 2. Automatic Re-authentication Callback
+
+Configure a callback to handle 401 responses automatically:
+
+```php
+$fs = new FamilySearch([
+    'appKey' => $_ENV['FS_APP_KEY'],
+    'onAuthenticationFailure' => function($response, $reason) use (&$fs, $username, $password) {
+        if ($reason === 'expired') {
+            // Automatically re-authenticate
+            $fs->oauthPassword($username, $password);
+            // SDK automatically retries the original request
+        }
+    }
+]);
+
+// Make requests normally - re-authentication happens transparently
+$response = $fs->get('/platform/tree/persons/PPPP-PPP');
+```
+
+### 3. Enhanced Token Information
+
+Retrieve detailed token metadata for custom handling:
+
+```php
+// Get detailed token information
+$tokenInfo = $fs->getAccessToken(true);
+
+echo "Token expires: " . date('Y-m-d H:i:s', $tokenInfo['expires_at']) . "\n";
+echo "Is expired: " . ($tokenInfo['is_expired'] ? 'Yes' : 'No') . "\n";
+
+// Calculate time remaining
+$timeRemaining = $tokenInfo['expires_at'] - time();
+$minutesRemaining = floor($timeRemaining / 60);
+echo "Time remaining: {$minutesRemaining} minutes\n";
+```
+
+### Additional Features
+
+- **Activity Tracking**: Each successful API call resets the 60-minute inactivity timer
+- **Automatic Request Replay**: Failed requests are transparently retried after successful re-authentication
+- **Backward Compatible**: Existing code continues to work without changes
+- **Configurable Thresholds**: Customize warning thresholds and replay behavior
+
+### Complete Documentation
+
+For comprehensive documentation including:
+- FamilySearch token behavior details
+- Complete working examples
+- Migration guide from manual 401 handling
+- Configuration options reference
+- Request replay behavior
+- Activity tracking details
+
+See **[docs/TOKEN_EXPIRATION.md](docs/TOKEN_EXPIRATION.md)**
+
+This feature addresses [Issue #2](https://github.com/FamilySearch/fs-php-lite/issues/2) (opened 2016), which requested automatic token expiration handling and re-authentication support.
+
 ## Serialization with gedcomx-php
 
 When the `objects` configuration option is set to true, the 
@@ -356,6 +441,7 @@ composer install
 
 # Run all tests
 composer test
+# Note: If you encounter verbose Xdebug output, use: XDEBUG_MODE=off composer test
 
 # Run only unit tests (fast, ~0.01s)
 composer test:unit
